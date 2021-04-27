@@ -1,0 +1,29 @@
+.photo-banner {
+    padding-top: 2em;
+}
+
+.photo-buttons {
+    margin-bottom: 1.5em;
+    margin-right: 3em;
+    margin-left: 3em;
+    margin-top: 1.5em;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+
+@media screen and (orientation: landscape) {
+    .photo-banner {
+        padding-left: 2em;
+        height: 100%;
+        width: 30%;
+        padding-top: 3em;
+    }
+
+    .photo-buttons {
+        flex-direction: column;
+        margin-right: 1em;
+        margin-left: 1em;
+    }
+}

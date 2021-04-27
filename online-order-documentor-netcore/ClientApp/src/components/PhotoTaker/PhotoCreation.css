@@ -1,0 +1,13 @@
+.webcamDiv {
+  position: relative;
+  max-width: 100%;
+  display: flex;
+  flex: 1 1;
+  justify-content: center;
+}
+
+.webcamDiv video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}

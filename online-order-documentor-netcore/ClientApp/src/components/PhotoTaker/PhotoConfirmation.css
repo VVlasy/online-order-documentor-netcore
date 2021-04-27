@@ -1,0 +1,21 @@
+.confirmingDiv {
+    width: 100%;
+    display: flex;
+    flex: 1 1;
+    align-items: center;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .loaderDiv {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .addPhoto {
+    padding: 1em;
+    margin: auto;
+  }
+  
