@@ -135,7 +135,7 @@ export default class BarcodeScanner extends React.Component {
 
 
                 <div className='barcodeScanner-buttonbox'>
-                    <Button size='massive' circular icon='check' color='green' disabled={this.state.scannedBarcode !== this.noBarcodeValue}
+                    <Button size='massive' circular icon='check' color='green' disabled={this.state.scannedBarcode === this.noBarcodeValue}
                         onClick={() => this.props.onConfirm(this.state.scannedBarcode)} />
                 </div>
             </div>
