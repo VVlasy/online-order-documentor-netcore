@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using MimeTypes;
 using online_order_documentor_netcore.Models;
+using System.IO;
+using System.Text;
 
 namespace online_order_documentor_netcore.Controllers.Api
 {
@@ -35,7 +37,12 @@ namespace online_order_documentor_netcore.Controllers.Api
             int nameIndex = 1;
             foreach (IFormFile file in model.Images)
             {
-                storage.Upload(file.OpenReadStream(), string.Format("{0}/{1}{2}", model.Name, nameIndex, MimeTypeMap.GetExtension(file.ContentType)));
+                using (var s = file.OpenReadStream())
+                {
+                    storage.Upload(s, string.Format("{0}/{1}{2}", model.Name, nameIndex, MimeTypeMap.GetExtension(file.ContentType)));
+                }
+
+                nameIndex++;
             }
 
             return base.Ok();

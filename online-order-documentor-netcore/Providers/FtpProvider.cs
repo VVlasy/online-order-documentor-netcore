@@ -27,12 +27,8 @@ namespace online_order_documentor_netcore.Providers
             request.Method = WebRequestMethods.Ftp.UploadFile;
 
             // Copy the contents of the file to the request stream.  
-            StreamReader sourceStream = new StreamReader(file);
-            byte[] fileContents = Encoding.UTF8.GetBytes(sourceStream.ReadToEnd());
-            sourceStream.Close();
-            request.ContentLength = fileContents.Length;
             Stream requestStream = request.GetRequestStream();
-            requestStream.Write(fileContents, 0, fileContents.Length);
+            file.CopyTo(requestStream);
             requestStream.Close();
             FtpWebResponse response = (FtpWebResponse)request.GetResponse();
 
