@@ -110,7 +110,7 @@ export default class BarcodeScanner extends React.Component {
         return (<Container {...props}>
             <div className='fullsize'>
                 <div className={'quagga-buttons'}>
-                    <Button className='docsIcon margin-top-1em' circular icon='info' onClick={() => window.location.href = '/api-docs'} />
+                    <Button className='docsIcon margin-top-1em disabled' circular icon='info' onClick={() => window.location.href = '/api-docs'} />
                     <Button className='refreshButton' circular icon='refresh' onClick={this.refreshCamera.bind(this)} />
                 </div>
 
@@ -135,7 +135,7 @@ export default class BarcodeScanner extends React.Component {
 
 
                 <div className='barcodeScanner-buttonbox'>
-                    <Button size='massive' circular icon='check' color='green' disabled={this.state.scannedBarcode === this.noBarcodeValue}
+                    <Button size='massive' circular icon='check' color='green' disabled={this.state.scannedBarcode !== this.noBarcodeValue}
                         onClick={() => this.props.onConfirm(this.state.scannedBarcode)} />
                 </div>
             </div>
