@@ -1,4 +1,4 @@
-﻿{
+{
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
@@ -18,10 +18,17 @@
     "online_order_documentor_netcore": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+        "FTP_HOST": "79.98.79.28",
+        "FTP_USER": "sklad",
+        "INSTAXSHOP_HASH": "k0fVSRquPS1yXPqyKxnXU",
+        "DIGI_ESHOP_HASH": "t9rrE9MDWUetrtyOwYroLWw",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "FTP_AVAILABILITY_XML_PATH": "homes/sklad premier/sklad.xml",
+        "FTP_PASS": "&!5eTb",
+        "FTP_PHOTOS_FOLDER_PATH": "SCAN/objednavky-victor-test"
+      },
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
     }
   }
 }
