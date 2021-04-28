@@ -5,11 +5,13 @@ WORKDIR /source
 # copy csproj and restore as distinct layers
 COPY *.sln .
 COPY online-order-documentor/*.csproj ./online-order-documentor/
+COPY online-order-documentor.IntegrationTests/*.csproj ./online-order-documentor.IntegrationTests/
+COPY online-order-documentor.UnitTests/*.csproj ./online-order-documentor.UnitTests/
 RUN dotnet restore
 
 # copy everything else and build app
 COPY online-order-documentor/. ./online-order-documentor/
-WORKDIR /source/online-order-documentor-netcore
+WORKDIR /source/online-order-documentor
 RUN dotnet publish -c release -o /app --no-restore
 
 # final stage/image
