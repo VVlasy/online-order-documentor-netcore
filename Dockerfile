@@ -12,7 +12,7 @@ RUN dotnet restore
 # copy everything else and build app
 COPY online-order-documentor/. ./online-order-documentor/
 WORKDIR /source/online-order-documentor
-RUN dotnet publish -c release -o /app --no-restore
+RUN dotnet publish online-order-documentor.sln -c release -o /app --no-restore
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
