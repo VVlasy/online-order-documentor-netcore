@@ -10,9 +10,25 @@ namespace online_order_documentor_netcore.Providers
 {
     public class FtpProvider : IStorageProvider
     {
-        public Stream Download()
+        public Stream Download(string name)
         {
-            throw new NotImplementedException();
+            string uploadUrl = string.Format("{0}//{1}", string.Format("ftp://{0}", AppVariables.FtpHost), name);
+            FtpWebRequest request = (FtpWebRequest)WebRequest.Create(uploadUrl);
+            request.Method = WebRequestMethods.Ftp.DownloadFile;
+            request.Credentials = new NetworkCredential(AppVariables.FtpUsername, AppVariables.FtpPassword);
+            request.Proxy = null;
+            request.KeepAlive = true;
+            request.UseBinary = true;
+
+            var str = new MemoryStream();
+
+            using (Stream ftpStream = request.GetResponse().GetResponseStream())
+            {
+                ftpStream.CopyTo(str);
+                str.Position = 0;            
+            }
+
+            return str;
         }
 
         public void Upload(Stream file, string name)
@@ -30,7 +46,6 @@ namespace online_order_documentor_netcore.Providers
             Stream requestStream = request.GetRequestStream();
             file.CopyTo(requestStream);
             requestStream.Close();
-            FtpWebResponse response = (FtpWebResponse)request.GetResponse();
 
             using (var resp = (FtpWebResponse)request.GetResponse())
             {

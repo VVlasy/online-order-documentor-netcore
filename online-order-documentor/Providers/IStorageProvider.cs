@@ -10,7 +10,7 @@ namespace online_order_documentor_netcore.Providers
     {
         void Upload(Stream file, string name);
 
-        Stream Download();
+        Stream Download(string name);
 
         void CreateFolder(string name);
 
