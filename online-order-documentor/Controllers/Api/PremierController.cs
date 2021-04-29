@@ -38,12 +38,7 @@ namespace online_order_documentor_netcore.Controllers.Api
                     s = s.Replace("sloupec06", "PRICE_NO_VAT");
                 }
 
-                return new ContentResult
-                {
-                    ContentType = "application/xml",
-                    Content = s,
-                    StatusCode = 200
-                };
+                return this.Xml(s);
             }
         }
     }

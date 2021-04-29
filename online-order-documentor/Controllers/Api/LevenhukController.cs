@@ -27,5 +27,13 @@ namespace online_order_documentor_netcore.Controllers.Api
 
             return base.Ok();
         }
+
+        [HttpGet]
+        [Route("feed-raised.xml")]
+        public IActionResult RaisedFeed()
+        {
+
+            return base.Ok();
+        }
     }
 }
