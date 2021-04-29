@@ -1,0 +1,42 @@
+domains:
+- domain: documentor.vvlasy.cz
+  type: PRIMARY
+- domain: documentor-staging.vvlasy.cz
+  type: ALIAS
+name: online-order-documentor
+region: fra
+services:
+- dockerfile_path: Dockerfile
+  envs:
+  - key: FTP_HOST
+    scope: RUN_AND_BUILD_TIME
+    value: 79.98.79.28
+  - key: FTP_USER
+    scope: RUN_AND_BUILD_TIME
+    value: sklad
+  - key: FTP_PASS
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+    value: EV[1:JTvORAKtb4HUWRwq+fGnwnv+ax0byHYn:LC+W1brSMoswhFN9yMTFg6g9zq17IQ==]
+  - key: FTP_PHOTOS_FOLDER_PATH
+    scope: RUN_AND_BUILD_TIME
+    value: SCAN/objednavky
+  - key: FTP_AVAILABILITY_XML_PATH
+    scope: RUN_AND_BUILD_TIME
+    value: homes/sklad premier/sklad.xml
+  - key: INSTAXSHOP_HASH
+    scope: RUN_AND_BUILD_TIME
+    value: k0fVSRquPS1yXPqyKxnXU
+  - key: DIGI_ESHOP_HASH
+    scope: RUN_AND_BUILD_TIME
+    value: t9rrE9MDWUetrtyOwYroLWw
+  gitlab:
+    branch: main
+    deploy_on_push: true
+    repo: VVlasy/online-order-documentor-netcore
+  http_port: 80
+  instance_count: 1
+  instance_size_slug: basic-xs
+  name: online-order-documentor
+  routes:
+  - path: /
