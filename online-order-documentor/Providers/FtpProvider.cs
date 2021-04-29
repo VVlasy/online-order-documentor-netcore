@@ -17,7 +17,7 @@ namespace online_order_documentor_netcore.Providers
 
         public void Upload(Stream file, string name)
         {
-            string uploadUrl = string.Format("{0}//{1}/{2}", string.Format("ftp://{0}", AppVariables.FtpHost), AppVariables.FtpPhotosFolder, name);
+            string uploadUrl = string.Format("{0}//{1}", string.Format("ftp://{0}", AppVariables.FtpHost), name);
             FtpWebRequest request = (FtpWebRequest)WebRequest.Create(uploadUrl);
             request.Method = WebRequestMethods.Ftp.UploadFile; 
             request.Credentials = new NetworkCredential(AppVariables.FtpUsername, AppVariables.FtpPassword);
@@ -39,7 +39,7 @@ namespace online_order_documentor_netcore.Providers
         }
         public void ClearFolder(string name)
         {
-            string folderUrl = string.Format("{0}//{1}/{2}/", string.Format("ftp://{0}", AppVariables.FtpHost), AppVariables.FtpPhotosFolder, name);
+            string folderUrl = string.Format("{0}//{1}/", string.Format("ftp://{0}", AppVariables.FtpHost), name);
 
             foreach (string folder in GetFilesInFolder(name))
             {
@@ -56,6 +56,7 @@ namespace online_order_documentor_netcore.Providers
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine(ex);
                     continue;
                 }
             }
@@ -63,7 +64,7 @@ namespace online_order_documentor_netcore.Providers
 
         public void CreateFolder(string name)
         {
-            string folderUrl = string.Format("{0}//{1}/{2}/", string.Format("ftp://{0}", AppVariables.FtpHost), AppVariables.FtpPhotosFolder, name);
+            string folderUrl = string.Format("{0}//{1}/", string.Format("ftp://{0}", AppVariables.FtpHost), name);
             WebRequest request = WebRequest.Create(folderUrl);
             request.Method = WebRequestMethods.Ftp.MakeDirectory;
             request.Credentials = new NetworkCredential(AppVariables.FtpUsername, AppVariables.FtpPassword);
@@ -77,7 +78,7 @@ namespace online_order_documentor_netcore.Providers
         {
             try
             {
-                string folderUrl = string.Format("{0}//{1}/{2}/", string.Format("ftp://{0}", AppVariables.FtpHost), AppVariables.FtpPhotosFolder, name);
+                string folderUrl = string.Format("{0}//{1}/", string.Format("ftp://{0}", AppVariables.FtpHost), name);
 
                 FtpWebRequest request = (FtpWebRequest)WebRequest.Create(folderUrl);
                 request.Method = WebRequestMethods.Ftp.ListDirectory;
@@ -90,6 +91,7 @@ namespace online_order_documentor_netcore.Providers
             }
             catch (WebException ex)
             {
+                Console.WriteLine(ex);
                 return false;
             }
         }
@@ -98,7 +100,7 @@ namespace online_order_documentor_netcore.Providers
         {
             try
             {
-                string folderUrl = string.Format("{0}//{1}/{2}/", string.Format("ftp://{0}", AppVariables.FtpHost), AppVariables.FtpPhotosFolder, name);
+                string folderUrl = string.Format("{0}//{1}/", string.Format("ftp://{0}", AppVariables.FtpHost), name);
 
                 FtpWebRequest request = (FtpWebRequest)WebRequest.Create(folderUrl);
                 request.Method = WebRequestMethods.Ftp.ListDirectory;
@@ -116,6 +118,7 @@ namespace online_order_documentor_netcore.Providers
             }
             catch (WebException ex)
             {
+                Console.WriteLine(ex);
                 return new string[] { };
             }
         }

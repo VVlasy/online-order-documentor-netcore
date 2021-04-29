@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MimeTypes;
 using online_order_documentor_netcore.Models;
+using System;
 using System.IO;
 using System.Text;
 
@@ -24,14 +25,16 @@ namespace online_order_documentor_netcore.Controllers.Api
                 return base.BadRequest("Missing images parameter");
             }
 
-            var storage = Providers.StorageProviderFactory.Create();
-            if (!storage.FolderExists(model.Name))
+            string imageFolderUri = AppVariables.FtpPhotosFolder + "/" + model.Name;
+
+            Providers.IStorageProvider storage = Providers.StorageProviderFactory.Create();
+            if (!storage.FolderExists(imageFolderUri))
             {
-                storage.CreateFolder(model.Name);
+                storage.CreateFolder(imageFolderUri);
             }
             else
             {
-                storage.ClearFolder(model.Name);
+                storage.ClearFolder(imageFolderUri);
             }
 
             int nameIndex = 1;
@@ -39,7 +42,7 @@ namespace online_order_documentor_netcore.Controllers.Api
             {
                 using (var s = file.OpenReadStream())
                 {
-                    storage.Upload(s, string.Format("{0}/{1}{2}", model.Name, nameIndex, MimeTypeMap.GetExtension(file.ContentType)));
+                    storage.Upload(s, string.Format("{0}/{1}{2}", imageFolderUri, nameIndex, MimeTypeMap.GetExtension(file.ContentType)));
                 }
 
                 nameIndex++;
