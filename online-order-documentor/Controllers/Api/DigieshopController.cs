@@ -55,16 +55,6 @@ namespace online_order_documentor_netcore.Controllers.Api
 
         private IActionResult DataFeed(List<string> brands, List<string> eans)
         {
-            XmlDocument digiEshopFeed = new XmlDocument();
-
-            using (WebClient client = new WebClient())
-            {
-                digiEshopFeed.Load(client.OpenRead(string.Format("https://{0}/universal.xml?hash={1}", "www.digi-eshop.cz", AppVariables.DigiEshopHash)));
-            }
-
-
-
-
             return base.Ok();
         }
 
@@ -79,6 +69,19 @@ namespace online_order_documentor_netcore.Controllers.Api
 
 
             return base.Ok();
+        }
+
+        public static XmlDocument GetRawFeed()
+        {
+            XmlDocument digiEshopFeed = new XmlDocument();
+            string url = "www.digi-eshop.cz";
+
+            using (WebClient client = new WebClient())
+            {
+                digiEshopFeed.Load(client.OpenRead(string.Format("https://{0}/universal.xml?hash={1}", url, AppVariables.DigiEshopHash)));
+            }
+
+            return digiEshopFeed;
         }
     }
 }

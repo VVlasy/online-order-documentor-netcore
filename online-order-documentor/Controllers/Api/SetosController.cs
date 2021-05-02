@@ -18,14 +18,9 @@ namespace online_order_documentor_netcore.Controllers.Api
         [Route("feed.xml")]
         public IActionResult RawFeed()
         {
-            XmlDocument digiEshopFeed = new XmlDocument();
-
-            using (WebClient client = new WebClient())
-            {
-                digiEshopFeed.Load(client.OpenRead(string.Format("https://{0}/universal.xml?hash={1}", "www.digi-eshop.cz", AppVariables.DigiEshopHash)));
-            }
-
-            return base.Ok();
+            string url = "http://www.setos.cz/upload/xml/promchat83125.xml";
+            var feed = Tools.GetRawXmlFeed(url);
+            return this.Xml(feed.OuterXml);
         }
 
         [HttpGet]
