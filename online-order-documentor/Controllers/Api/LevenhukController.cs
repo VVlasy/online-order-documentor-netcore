@@ -46,8 +46,9 @@ namespace online_order_documentor_netcore.Controllers.Api
         [Route("feed-raised.xml")]
         public IActionResult RaisedFeed()
         {
+            XmlDocument shoptetFeed = GetShoptetFeed(1.016);
 
-            return base.Ok();
+            return this.Xml(shoptetFeed.OuterXml);
         }
 
         public static XmlDocument GetShoptetFeed(double priceRaise = 1)
