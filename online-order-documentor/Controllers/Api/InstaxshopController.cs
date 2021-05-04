@@ -5,7 +5,9 @@ using online_order_documentor_netcore.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Text;
+using System.Xml;
 
 namespace online_order_documentor_netcore.Controllers.Api
 {
@@ -29,11 +31,11 @@ namespace online_order_documentor_netcore.Controllers.Api
             {
                 if (item.StartsWith("EAN="))
                 {
-                    eans.Add(item.Substring(4));
+                    eans.Add(item.Substring(4).ToLower());
                 }
                 else
                 {
-                    brands.Add(item);
+                    brands.Add(item.ToLower());
                 }
             }
 
@@ -52,8 +54,10 @@ namespace online_order_documentor_netcore.Controllers.Api
 
         private IActionResult DataFeed(List<string> brands, List<string> eans)
         {
+            var url = string.Format("https://www.instaxshop.cz/heureka/export/products.xml?hash={0}", AppVariables.InstaxShopHash);
+            var feed = Tools.StripByBrandsAndEans(Tools.GetRawXmlFeed(url), brands, eans);
 
-            return base.Ok();
+            return this.Xml(feed.OuterXml);
         }
 
         private IActionResult AvailabilityFeed(List<string> brands, List<string> eans)
