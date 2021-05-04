@@ -1,12 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using MimeTypes;
-using online_order_documentor_netcore.Models;
-using System;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Text;
 using System.Xml;
 
 namespace online_order_documentor_netcore.Controllers.Api
@@ -79,10 +72,10 @@ namespace online_order_documentor_netcore.Controllers.Api
                         case "ZASOBA":
                             XmlNode stockNode = shoptetFeed.CreateNode(XmlNodeType.Element, "STOCK", string.Empty);
                             XmlNode amountNode = shoptetFeed.CreateNode(XmlNodeType.Element, "AMOUNT", string.Empty);
-                            stockNode.InnerText = polozkaProperty.InnerText;
-                            amountNode.AppendChild(stockNode);
+                            amountNode.InnerText = polozkaProperty.InnerText;
+                            stockNode.AppendChild(amountNode);
 
-                            newNode.AppendChild(amountNode);
+                            newNode.AppendChild(stockNode);
                             break;
                         case "PARAMETRY":
                             XmlNode paramsNode = shoptetFeed.CreateNode(XmlNodeType.Element, "INFORMATION_PARAMETERS", string.Empty);
@@ -109,8 +102,8 @@ namespace online_order_documentor_netcore.Controllers.Api
                             var priceNode = shoptetFeed.CreateNode(XmlNodeType.Element, "PRICE", string.Empty);
                             var priceVatNode = shoptetFeed.CreateNode(XmlNodeType.Element, "PRICE_VAT", string.Empty);
 
-                            priceNode.InnerText = (double.Parse(polozkaProperty.InnerText) / (1 - (priceRaise - 1))).ToString("N2", System.Globalization.CultureInfo.InvariantCulture);
-                            priceVatNode.InnerText = (double.Parse(polozkaProperty.InnerText) / (1 - (priceRaise - 1)) * 1.21).ToString("N2", System.Globalization.CultureInfo.InvariantCulture);
+                            priceNode.InnerText = (double.Parse(polozkaProperty.InnerText) / (1 - (priceRaise - 1))).ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+                            priceVatNode.InnerText = (double.Parse(polozkaProperty.InnerText) / (1 - (priceRaise - 1)) * 1.21).ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
 
                             newNode.AppendChild(priceNode);
                             newNode.AppendChild(priceVatNode);
@@ -125,7 +118,8 @@ namespace online_order_documentor_netcore.Controllers.Api
                             XmlNode newNodeProperty = shoptetFeed.CreateNode(XmlNodeType.Element, newNodePropertyName, string.Empty);
 
                             newNodeProperty.InnerText = polozkaProperty.InnerText;
-                            newNode.AppendChild(newNodeProperty);
+                            if (!string.IsNullOrEmpty(newNodeProperty.InnerText))
+                                newNode.AppendChild(newNodeProperty);
                             break;
                     }
                 }
