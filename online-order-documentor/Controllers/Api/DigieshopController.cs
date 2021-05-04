@@ -31,11 +31,11 @@ namespace online_order_documentor_netcore.Controllers.Api
             {
                 if (item.StartsWith("EAN="))
                 {
-                    eans.Add(item.Substring(4));
+                    eans.Add(item.Substring(4).ToLower());
                 }
                 else
                 {
-                    brands.Add(item);
+                    brands.Add(item.ToLower());
                 }
             }
 
@@ -55,7 +55,10 @@ namespace online_order_documentor_netcore.Controllers.Api
 
         private IActionResult DataFeed(List<string> brands, List<string> eans)
         {
-            return base.Ok();
+            var url = string.Format("https://www.digi-eshop.cz/universal.xml?hash={0}", AppVariables.DigiEshopHash);
+            var feed = Tools.StripByBrandsAndEans(Tools.GetRawXmlFeed(url), brands, eans);
+
+            return this.Xml(feed.OuterXml);
         }
 
         private IActionResult AvailabilityFeed(List<string> brands, List<string> eans)
@@ -69,19 +72,6 @@ namespace online_order_documentor_netcore.Controllers.Api
 
 
             return base.Ok();
-        }
-
-        public static XmlDocument GetRawFeed()
-        {
-            XmlDocument digiEshopFeed = new XmlDocument();
-            string url = "www.digi-eshop.cz";
-
-            using (WebClient client = new WebClient())
-            {
-                digiEshopFeed.Load(client.OpenRead(string.Format("https://{0}/universal.xml?hash={1}", url, AppVariables.DigiEshopHash)));
-            }
-
-            return digiEshopFeed;
         }
     }
 }

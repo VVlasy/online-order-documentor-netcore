@@ -30,5 +30,29 @@ namespace online_order_documentor_netcore.Controllers
 
             return feed;
         }
+
+        public static XmlDocument StripByBrandsAndEans(this XmlDocument sourceShoptetFeed, List<string> brands, List<string> eans)
+        {
+            XmlDocument feed = new XmlDocument();
+            XmlNode shoptetFeedItems = feed.CreateNode(XmlNodeType.Element, "SHOP", string.Empty);
+
+            // brands removal
+            var brandsToKeep = sourceShoptetFeed.ChildNodes[1].ChildNodes.Cast<XmlNode>().Where(x => x.ChildNodes.Cast<XmlNode>().Any(y => y.Name == "MANUFACTURER" && brands.Contains(y.InnerText.ToLower())));
+            var eansToKeep = sourceShoptetFeed.ChildNodes[1].ChildNodes.Cast<XmlNode>().Where(x => x.ChildNodes.Cast<XmlNode>().Any(y => y.Name == "EAN" && eans.Contains(y.InnerText.ToLower())));
+
+            foreach (var item in brandsToKeep)
+            {
+                XmlNode importNode = feed.ImportNode(item, true);
+                shoptetFeedItems.AppendChild(importNode);
+            }
+            foreach (var item in eansToKeep)
+            {
+                XmlNode importNode = feed.ImportNode(item, true);
+                shoptetFeedItems.AppendChild(importNode);
+            }
+
+            feed.AppendChild(shoptetFeedItems);
+            return feed;
+        }
     }
 }
