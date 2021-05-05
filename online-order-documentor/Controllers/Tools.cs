@@ -36,6 +36,11 @@ namespace online_order_documentor_netcore.Controllers
             XmlDocument feed = new XmlDocument();
             XmlNode shoptetFeedItems = feed.CreateNode(XmlNodeType.Element, "SHOP", string.Empty);
 
+            if (eans.Count == 0 && brands.Count == 0)
+            {
+                return sourceShoptetFeed;
+            }
+
             // brands removal
             var brandsToKeep = sourceShoptetFeed.ChildNodes[1].ChildNodes.Cast<XmlNode>().Where(x => x.ChildNodes.Cast<XmlNode>().Any(y => y.Name == "MANUFACTURER" && brands.Contains(y.InnerText.ToLower())));
             var eansToKeep = sourceShoptetFeed.ChildNodes[1].ChildNodes.Cast<XmlNode>().Where(x => x.ChildNodes.Cast<XmlNode>().Any(y => y.Name == "EAN" && eans.Contains(y.InnerText.ToLower())));
