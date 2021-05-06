@@ -20,7 +20,12 @@ namespace online_order_documentor_netcore
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    var port = Environment.GetEnvironmentVariable("PORT");
+
+                    webBuilder.UseStartup<Startup>()
+                    .UseUrls("http://*:" + port);
+
+                    //todo: handle in debug, this is fix for heroku
                 });
     }
 }
