@@ -12,7 +12,7 @@ using System.Xml;
 namespace online_order_documentor_netcore.Controllers.Api
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/instax")]
     public class InstaxshopController : Controller
     {
         [HttpGet]
@@ -62,15 +62,22 @@ namespace online_order_documentor_netcore.Controllers.Api
 
         private IActionResult AvailabilityFeed(List<string> brands, List<string> eans)
         {
+            var url = string.Format("https://www.instaxshop.cz/universal.xml?hash={0}", AppVariables.InstaxShopHash);
+            var feed = Tools.StripByBrandsAndEans(Tools.GetRawXmlFeed(url), brands, eans);
 
-            return base.Ok();
+            feed = Tools.CreateAvailabilityFeed(feed);
+
+            return this.Xml(feed.OuterXml);
         }
 
         private IActionResult ShoptetAvailabilityFeed(List<string> brands, List<string> eans)
         {
+            var url = string.Format("https://www.instaxshop.cz/universal.xml?hash={0}", AppVariables.InstaxShopHash);
+            var feed = Tools.StripByBrandsAndEans(Tools.GetRawXmlFeed(url), brands, eans);
 
+            feed = Tools.CreateAvailabilityFeedShoptet(feed);
 
-            return base.Ok();
+            return this.Xml(feed.OuterXml);
         }
     }
 }
