@@ -59,5 +59,112 @@ namespace online_order_documentor_netcore.Controllers
             feed.AppendChild(shoptetFeedItems);
             return feed;
         }
+
+        public static XmlDocument CreateAvailabilityFeed(XmlDocument sourceFeed, bool includeEans = false)
+        {
+            var stockData = GetStockData();
+
+            XmlDocument availabilityFeed = new XmlDocument();
+            XmlNode shoptetFeedItems = availabilityFeed.CreateNode(XmlNodeType.Element, "item_list", string.Empty);
+
+            foreach (XmlNode polozka in sourceFeed.ChildNodes.Cast<XmlNode>().FirstOrDefault(x=> x.Name == "SHOP").ChildNodes)
+            {
+                var newNode = availabilityFeed.CreateNode(XmlNodeType.Element, "item", string.Empty);
+                var newNodeAttr = availabilityFeed.CreateAttribute("id");
+
+                var ean = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "EAN").InnerText;
+                var id = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "ITEM_ID").InnerText;
+
+                newNodeAttr.Value = id;
+                newNode.Attributes.Append(newNodeAttr);
+
+                if (!string.IsNullOrEmpty(ean) && stockData.ContainsKey(ean))
+                {
+                    var eanNode = availabilityFeed.CreateNode(XmlNodeType.Element, "EAN", string.Empty);
+                    var quantityNode = availabilityFeed.CreateNode(XmlNodeType.Element, "stock_quantity", string.Empty);
+
+                    eanNode.InnerText = ean;
+                    quantityNode.InnerText = stockData[ean].ToString();
+
+                    if (includeEans)
+                    {
+                        newNode.AppendChild(eanNode);
+                    }
+                    newNode.AppendChild(quantityNode);
+
+                    shoptetFeedItems.AppendChild(newNode);
+                }
+            }
+
+            availabilityFeed.AppendChild(shoptetFeedItems);
+
+            return availabilityFeed;
+        }
+
+        public static XmlDocument CreateAvailabilityFeedShoptet(XmlDocument sourceFeed, List<string> eansToIgnore = null) 
+        {
+            var stockData = GetStockData();
+
+            XmlDocument availabilityFeed = new XmlDocument();
+            XmlNode shoptetFeedItems = availabilityFeed.CreateNode(XmlNodeType.Element, "SHOP", string.Empty);
+
+            foreach (XmlNode polozka in sourceFeed.Cast<XmlNode>().FirstOrDefault(x => x.Name == "SHOP").ChildNodes)
+            {
+                var newNode = availabilityFeed.CreateNode(XmlNodeType.Element, "SHOPITEM", string.Empty);
+
+                var ean = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "EAN").InnerText;
+                var id = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "ITEM_ID").InnerText;
+
+                if (!string.IsNullOrEmpty(ean) && stockData.ContainsKey(ean))
+                {
+                    var codeNode = availabilityFeed.CreateNode(XmlNodeType.Element, "CODE", string.Empty);
+
+                    var stockNode = availabilityFeed.CreateNode(XmlNodeType.Element, "STOCK", string.Empty);
+                    var amountNode = availabilityFeed.CreateNode(XmlNodeType.Element, "AMOUNT", string.Empty);
+
+                    codeNode.InnerText = id;
+
+                    amountNode.InnerText = stockData[ean].ToString();
+
+                    stockNode.AppendChild(amountNode);
+                    newNode.AppendChild(codeNode);
+                    newNode.AppendChild(stockNode);
+
+                    if (eansToIgnore == null || !eansToIgnore.Contains(ean))
+                    {
+                        shoptetFeedItems.AppendChild(newNode);
+                    }
+                }
+            }
+
+            availabilityFeed.AppendChild(shoptetFeedItems);
+
+            return availabilityFeed;
+        }
+
+        public static Dictionary<string, int> GetStockData()
+        {
+            XmlDocument availabilityFeed = new XmlDocument();
+
+            var storage = Providers.StorageProviderFactory.Create();
+            availabilityFeed.Load(storage.Download(AppVariables.FtpAvailabilityXmlPath));
+
+            //Dictionary by int
+            Dictionary<string, int> stockData = new Dictionary<string, int>();
+
+            foreach (XmlNode polozka in availabilityFeed.ChildNodes[1].ChildNodes)
+            {
+                var key = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec03").InnerText;
+                var stringAmount = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec04").InnerText.Replace(",00", string.Empty);
+
+                int amount;
+                if (!string.IsNullOrEmpty(key) && !stockData.ContainsKey(key) && int.TryParse(stringAmount, out amount))
+                {
+                    stockData.Add(key, amount);
+                }
+            }
+
+            return stockData;
+        }
     }
 }

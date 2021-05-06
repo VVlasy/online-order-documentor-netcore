@@ -5,6 +5,7 @@ using online_order_documentor_netcore.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Xml;
@@ -39,7 +40,7 @@ namespace online_order_documentor_netcore.Controllers.Api
                 }
             }
 
-            
+
             switch (destination)
             {
                 case "data.xml":
@@ -63,15 +64,33 @@ namespace online_order_documentor_netcore.Controllers.Api
 
         private IActionResult AvailabilityFeed(List<string> brands, List<string> eans)
         {
+            var url = string.Format("https://www.digi-eshop.cz/universal.xml?hash={0}", AppVariables.DigiEshopHash);
+            var feed = Tools.StripByBrandsAndEans(Tools.GetRawXmlFeed(url), brands, eans);
 
-            return base.Ok();
+            feed = Tools.CreateAvailabilityFeed(feed);
+
+            return this.Xml(feed.OuterXml);
         }
 
         private IActionResult ShoptetAvailabilityFeed(List<string> brands, List<string> eans)
         {
+            var url = string.Format("https://www.digi-eshop.cz/universal.xml?hash={0}", AppVariables.DigiEshopHash);
+            var feed = Tools.StripByBrandsAndEans(Tools.GetRawXmlFeed(url), brands, eans);
 
+            IEnumerable<string> levenhukEans = LevenhukController.GetShoptetFeed().ChildNodes[0].ChildNodes.Cast<XmlNode>()
+                .Select(x => x.ChildNodes.Cast<XmlNode>().Where(x => x.Name == "EAN").Select(x => x.InnerText))
+                .Select(x => x.FirstOrDefault()).Cast<string>();
 
-            return base.Ok();
+            IEnumerable<string> setosEans = SetosController.GetShoptetFeed().ChildNodes[0].ChildNodes.Cast<XmlNode>()
+                .Select(x => x.ChildNodes.Cast<XmlNode>().Where(x => x.Name == "EAN").Select(x => x.InnerText))
+                .Select(x => x.FirstOrDefault()).Cast<string>();
+
+            List<string> eansToRemove = levenhukEans.ToList();
+            eansToRemove.AddRange(setosEans);
+
+            feed = Tools.CreateAvailabilityFeedShoptet(feed, eansToRemove);
+
+            return this.Xml(feed.OuterXml);
         }
     }
 }
