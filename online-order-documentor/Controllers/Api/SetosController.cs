@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Xml;
 using System.Linq;
+using System.Globalization;
 
 namespace online_order_documentor_netcore.Controllers.Api
 {
@@ -106,10 +107,10 @@ namespace online_order_documentor_netcore.Controllers.Api
 
                             double price;
 
-                            if (!double.TryParse(polozkaProperty.InnerText, out price))
+                            if (!double.TryParse(polozkaProperty.InnerText, NumberStyles.Any, CultureInfo.InvariantCulture, out price))
                                 break;
 
-                            priceNode.InnerText = price.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+                            priceNode.InnerText = price.ToString("F2", CultureInfo.InvariantCulture);
 
                             newNode.AppendChild(priceNode);
                             break;
@@ -118,10 +119,10 @@ namespace online_order_documentor_netcore.Controllers.Api
 
                             double purchasePrice;
 
-                            if (!double.TryParse(polozkaProperty.InnerText, out purchasePrice))
+                            if (!double.TryParse(polozkaProperty.InnerText, NumberStyles.Any, CultureInfo.InvariantCulture, out purchasePrice))
                                 break;
 
-                            purchasePriceNode.InnerText = (purchasePrice * 1.21).ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+                            purchasePriceNode.InnerText = (purchasePrice * 1.21).ToString("F2", CultureInfo.InvariantCulture);
                             newNode.AppendChild(purchasePriceNode);
                             break;
                         case "EAN":

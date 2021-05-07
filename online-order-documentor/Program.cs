@@ -22,8 +22,14 @@ namespace online_order_documentor_netcore
                 {
                     var port = Environment.GetEnvironmentVariable("PORT");
 
-                    webBuilder.UseStartup<Startup>()
-                    .UseUrls("http://*:" + port);
+                    if (!string.IsNullOrEmpty(port))
+                    {
+                        webBuilder.UseStartup<Startup>()
+                        .UseUrls("http://*:" + port);
+                    } else
+                    {
+                        webBuilder.UseStartup<Startup>();
+                    }
 
                     //todo: handle in debug, this is fix for heroku
                 });
