@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Linq;
 using System.Globalization;
+using System.Threading;
 
 namespace online_order_documentor_netcore.Controllers.Api
 {
@@ -41,6 +42,8 @@ namespace online_order_documentor_netcore.Controllers.Api
 
         public static XmlDocument GetShoptetFeed()
         {
+            var setosCulture = new CultureInfo("cs-CZ");
+
             string url = "http://www.setos.cz/upload/xml/promchat83125.xml";
             var feed = Tools.GetRawXmlFeed(url);
 
@@ -107,7 +110,7 @@ namespace online_order_documentor_netcore.Controllers.Api
 
                             double price;
 
-                            if (!double.TryParse(polozkaProperty.InnerText.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out price))
+                            if (!double.TryParse(polozkaProperty.InnerText, NumberStyles.Any, setosCulture, out price))
                                 break;
 
                             priceNode.InnerText = price.ToString("F2", CultureInfo.InvariantCulture);
@@ -119,7 +122,7 @@ namespace online_order_documentor_netcore.Controllers.Api
 
                             double purchasePrice;
 
-                            if (!double.TryParse(polozkaProperty.InnerText.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out purchasePrice))
+                            if (!double.TryParse(polozkaProperty.InnerText, NumberStyles.Any, setosCulture, out purchasePrice))
                                 break;
 
                             purchasePriceNode.InnerText = (purchasePrice * 1.21).ToString("F2", CultureInfo.InvariantCulture);
