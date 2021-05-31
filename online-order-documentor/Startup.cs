@@ -101,11 +101,7 @@ namespace online_order_documentor_netcore
                 }
             });
 
-            if (dataContext.Database.IsRelational())
-            {
-                Console.WriteLine("Running migrations");
-                dataContext.Database.Migrate();
-            }
+            dataContext.Database.EnsureCreated();
         }
     }
 }
