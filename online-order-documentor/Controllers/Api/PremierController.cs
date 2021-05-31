@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MimeTypes;
 using online_order_documentor_netcore.Models;
-using System;
 using System.IO;
 using System.Text;
 
@@ -36,6 +35,9 @@ namespace online_order_documentor_netcore.Controllers.Api
                     s = s.Replace("sloupec04", "STOCK");
                     s = s.Replace("sloupec05", "PURCHASEPRICE");
                     s = s.Replace("sloupec06", "PRICE_NO_VAT");
+
+                    s = s.ModifyTag("PURCHASEPRICE", (s) => s.Replace(" ", string.Empty));
+                    s = s.ModifyTag("PRICE_NO_VAT", (s) => s.Replace(" ", string.Empty));
                 }
 
                 return this.Xml(s);
