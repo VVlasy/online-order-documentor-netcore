@@ -57,6 +57,7 @@ namespace online_order_documentor_netcore.Controllers.Api
                     s = s.ModifyTag("PURCHASEPRICE", (s) => s.Replace(" ", string.Empty).Replace(',', '.'));
                     s = s.ModifyTag("PRICE_NO_VAT", (s) => s.Replace(" ", string.Empty).Replace(',', '.'));
                     s = s.ModifyTag("WEIGHT", (s) => s.Replace(" ", string.Empty).Replace(',', '.'));
+                    s = s.ModifyTag("STOCK", (s) => s.Replace(" ", string.Empty).Replace(',', '.'));
                 }
 
                 return this.Xml(s);
