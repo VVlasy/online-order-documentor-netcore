@@ -24,7 +24,7 @@ namespace online_order_documentor_netcore.Controllers.Api
             {
                 string s = sr.ReadToEnd();
 
-                if (filename == "mallczcfeed")
+                if (filename == "mallfeed")
                 {
                     s = s.Replace("VFPData", "SHOP");
                     s = s.Replace("que_txt", "SHOPITEM");
