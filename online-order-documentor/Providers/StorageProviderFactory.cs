@@ -7,9 +7,9 @@ namespace online_order_documentor_netcore.Providers
 {
     public static class StorageProviderFactory
     {
-        public static IStorageProvider Create()
+        public static IStorageProvider Create(bool fileCombiner = false)
         {
-            return new FtpProvider();
+            return fileCombiner ? new SplitFilesFtpProvider() : new FtpProvider();
         }
     }
 }
