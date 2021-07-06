@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MimeTypes;
 using online_order_documentor_netcore.Models;
@@ -16,7 +16,7 @@ namespace online_order_documentor_netcore.Controllers.Api
         public IActionResult Index(string filename)
         {
             // TODO: return feed from premier feeds folder in ftp
-            Providers.IStorageProvider storage = Providers.StorageProviderFactory.Create();
+            Providers.IStorageProvider storage = Providers.StorageProviderFactory.Create(true);
 
             string file = $"homes/sklad premier/Public feed/{filename}.xml";
 
