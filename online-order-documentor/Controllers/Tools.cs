@@ -72,7 +72,7 @@ namespace online_order_documentor_netcore.Controllers
                 var newNode = availabilityFeed.CreateNode(XmlNodeType.Element, "item", string.Empty);
                 var newNodeAttr = availabilityFeed.CreateAttribute("id");
 
-                var ean = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "EAN").InnerText;
+                var ean = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "EAN").InnerText.PadLeft(13, '0');
                 var id = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "ITEM_ID").InnerText;
 
                 newNodeAttr.Value = id;
@@ -112,7 +112,7 @@ namespace online_order_documentor_netcore.Controllers
             {
                 var newNode = availabilityFeed.CreateNode(XmlNodeType.Element, "SHOPITEM", string.Empty);
 
-                var ean = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "EAN").InnerText;
+                var ean = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "EAN").InnerText.PadLeft(13, '0');
                 var id = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "ITEM_ID").InnerText;
 
                 if (!string.IsNullOrEmpty(ean) && stockData.ContainsKey(ean))
@@ -154,7 +154,7 @@ namespace online_order_documentor_netcore.Controllers
 
             foreach (XmlNode polozka in availabilityFeed.ChildNodes[1].ChildNodes)
             {
-                var key = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec03").InnerText;
+                var key = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec03").InnerText.PadLeft(13, '0');
                 var stringAmount = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec04").InnerText.Replace(",00", string.Empty);
 
                 int amount;
