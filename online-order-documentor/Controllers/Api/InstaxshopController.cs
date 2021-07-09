@@ -31,7 +31,7 @@ namespace online_order_documentor_netcore.Controllers.Api
             {
                 if (item.StartsWith("EAN="))
                 {
-                    eans.Add(item.Substring(4).ToLower());
+                    eans.Add(item.Substring(4).ToLower().PadLeft(13, '0'));
                 }
                 else
                 {

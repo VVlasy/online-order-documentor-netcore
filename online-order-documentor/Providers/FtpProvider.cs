@@ -10,7 +10,7 @@ namespace online_order_documentor_netcore.Providers
 {
     public class FtpProvider : IStorageProvider
     {
-        public Stream Download(string name)
+        public virtual Stream Download(string name)
         {
             string uploadUrl = string.Format("{0}//{1}", string.Format("ftp://{0}", AppVariables.FtpHost), name);
             FtpWebRequest request = (FtpWebRequest)WebRequest.Create(uploadUrl);

@@ -112,6 +112,7 @@ namespace online_order_documentor_netcore.Controllers.Api
                         case "CENA_DOPORUCENA":
                         case "ZARUKA":
                         case "NACESTE":
+                        case "RECYKLACNI_PRISPEVEK":
                             break;
                         default:
                             string newNodePropertyName = NodeConversions.ContainsKey(polozkaProperty.Name) ? NodeConversions[polozkaProperty.Name] : polozkaProperty.Name;
