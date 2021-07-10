@@ -147,7 +147,10 @@ namespace online_order_documentor_netcore.Controllers
             XmlDocument availabilityFeed = new XmlDocument();
 
             var storage = Providers.StorageProviderFactory.Create(true);
-            availabilityFeed.Load(storage.Download(AppVariables.FtpAvailabilityXmlPath));
+            using (var downloadedFile = storage.Download(AppVariables.FtpAvailabilityXmlPath))
+            {
+                availabilityFeed.Load(downloadedFile);
+            }
 
             //Dictionary by int
             Dictionary<string, int> stockData = new Dictionary<string, int>();
