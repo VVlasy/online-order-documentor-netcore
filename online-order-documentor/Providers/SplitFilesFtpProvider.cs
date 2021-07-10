@@ -38,46 +38,49 @@ namespace online_order_documentor_netcore.Providers
             foreach (string filename in files)
             {
                 XmlDocument srcFile = new XmlDocument();
-                srcFile.Load(base.Download($"{folderOfFile}/{filename}"));
-
-                // Detect feed type: (Premier should be the only one)
-
-                switch (srcFile.LastChild.Name) // TODO: check we are still the same type of xml, if not, throw err
+                using (var str = base.Download($"{folderOfFile}/{filename}"))
                 {
-                    case "VFPData":
-                        if (resultXml.ChildNodes.Count == 0) // first time we are filling the result xml
-                        {
-                            resultXml.AppendChild(resultXml.ImportNode(srcFile.FirstChild, true));
-                            var vfpDataNode = resultXml.CreateNode(XmlNodeType.Element, "VFPData", string.Empty);
-                            resultXml.AppendChild(vfpDataNode);
-                        }
+                    srcFile.Load(str);
 
-                        foreach (XmlNode childNode in srcFile.LastChild.ChildNodes.Cast<XmlNode>())
-                        {
-                            string id = childNode.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec01").InnerText;
-                            int stockAmount = int.Parse(childNode.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec04").InnerText.Replace(",00", string.Empty).Replace(" ", string.Empty));
+                    // Detect feed type: (Premier should be the only one)
 
-                            // check if we already have a node with this id
-                            if (resultXml.LastChild.ChildNodes.Cast<XmlNode>().Any(x => x.ChildNodes.Cast<XmlNode>().Any(y => y.Name == "sloupec01" && y.InnerText == id)))
+                    switch (srcFile.LastChild.Name) // TODO: check we are still the same type of xml, if not, throw err
+                    {
+                        case "VFPData":
+                            if (resultXml.ChildNodes.Count == 0) // first time we are filling the result xml
                             {
-                                XmlNode resultFoundNode = resultXml.LastChild.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.ChildNodes.Cast<XmlNode>().Any(y => y.Name == "sloupec01" && y.InnerText == id));
-                                XmlNode resultstockAmountNode = resultFoundNode.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec04");
-
-                                var stockAmountResult = int.Parse(resultstockAmountNode.InnerText.Replace(",00", string.Empty).Replace(" ", string.Empty));
-                                resultstockAmountNode.InnerText = $"{stockAmount + stockAmountResult},00";
+                                resultXml.AppendChild(resultXml.ImportNode(srcFile.FirstChild, true));
+                                var vfpDataNode = resultXml.CreateNode(XmlNodeType.Element, "VFPData", string.Empty);
+                                resultXml.AppendChild(vfpDataNode);
                             }
-                            else
+
+                            foreach (XmlNode childNode in srcFile.LastChild.ChildNodes.Cast<XmlNode>())
                             {
-                                XmlNode newQueTxtNode = resultXml.CreateNode(XmlNodeType.Element, "que_txt", string.Empty);
-                                newQueTxtNode.InnerXml = childNode.InnerXml;
+                                string id = childNode.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec01").InnerText;
+                                int stockAmount = int.Parse(childNode.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec04").InnerText.Replace(",00", string.Empty).Replace(" ", string.Empty));
 
-                                resultXml.LastChild.AppendChild(newQueTxtNode);
+                                // check if we already have a node with this id
+                                if (resultXml.LastChild.ChildNodes.Cast<XmlNode>().Any(x => x.ChildNodes.Cast<XmlNode>().Any(y => y.Name == "sloupec01" && y.InnerText == id)))
+                                {
+                                    XmlNode resultFoundNode = resultXml.LastChild.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.ChildNodes.Cast<XmlNode>().Any(y => y.Name == "sloupec01" && y.InnerText == id));
+                                    XmlNode resultstockAmountNode = resultFoundNode.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec04");
+
+                                    var stockAmountResult = int.Parse(resultstockAmountNode.InnerText.Replace(",00", string.Empty).Replace(" ", string.Empty));
+                                    resultstockAmountNode.InnerText = $"{stockAmount + stockAmountResult},00";
+                                }
+                                else
+                                {
+                                    XmlNode newQueTxtNode = resultXml.CreateNode(XmlNodeType.Element, "que_txt", string.Empty);
+                                    newQueTxtNode.InnerXml = childNode.InnerXml;
+
+                                    resultXml.LastChild.AppendChild(newQueTxtNode);
+                                }
                             }
-                        }
 
-                        break;
-                    default:
-                        break;
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
 
