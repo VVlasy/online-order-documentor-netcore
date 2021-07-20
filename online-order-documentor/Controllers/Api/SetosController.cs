@@ -144,7 +144,11 @@ namespace online_order_documentor_netcore.Controllers.Api
                         case "Stav":
                             break;
                         default:
-                            string newNodePropertyName = NodeConversions.ContainsKey(polozkaProperty.Name) ? NodeConversions[polozkaProperty.Name] : polozkaProperty.Name;
+                            if (!NodeConversions.ContainsKey(polozkaProperty.Name))
+                            {
+                                break;
+                            }
+                            string newNodePropertyName = NodeConversions[polozkaProperty.Name];
                             XmlNode newNodeProperty = shoptetFeed.CreateNode(XmlNodeType.Element, newNodePropertyName, string.Empty);
 
                             newNodeProperty.InnerText = polozkaProperty.InnerText;
