@@ -57,18 +57,21 @@ namespace online_order_documentor_netcore.Controllers.Api
         }
 
         [HttpGet]
+        [Route("GetFiles")]
         public IActionResult GetFiles([FromQuery(Name = "dir")] string dir)
         {
             return this.Json(Directory.GetFiles(dir));
         }
 
         [HttpGet]
+        [Route("GetDirectories")]
         public IActionResult GetDirectories([FromQuery(Name = "dir")] string dir)
         {
             return this.Json(Directory.GetDirectories(dir));
         }
 
         [HttpGet]
+        [Route("GetCurrentDir")]
         public IActionResult GetCurrentDir()
         {
             return this.Json(Directory.GetCurrentDirectory());
