@@ -1,155 +1,156 @@
 html {
-  overflow: hidden;
-  height: 100%;
-  max-width: 100vw;
+    overflow: hidden;
+    height: 100%;
+    max-width: 100vw;
 }
 
 body {
-  overflow: auto;
-  height: 100%;
-  display: flex;
-  max-width: inherit;
+    overflow: auto;
+    height: 100%;
+    display: flex;
+    max-width: inherit;
 }
 
 #root {
-  display: flex;
-  align-content: stretch;
-  flex: 1;
-  align-self: flex-start;
-  min-height: 100%;
+    display: flex;
+    align-content: stretch;
+    flex: 1;
+    align-self: flex-start;
+    min-height: 100%;
 }
 
 .App {
-  min-width: 100%;
-  text-align: center;
-  display: flex;
+    min-width: 100%;
+    text-align: center;
+    display: flex;
 }
 
 .App-logo {
-  height: 40vmin;
-  pointer-events: none;
+    height: 40vmin;
+    pointer-events: none;
 }
 
 .App-header {
-  background-color: #282c34;
-  max-width: 100%;
-  max-height: inherit;
-  min-height: 100%;
-  display: flex;
-  align-items: stretch;
-  flex-direction: column;
-  font-size: 1.3em;
-  color: white;
-  flex: 1;
+    background-color: #282c34;
+    max-width: 100%;
+    max-height: inherit;
+    min-height: 100%;
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+    font-size: 1.3em;
+    color: white;
+    flex: 1;
 }
 
 div.ui.grid {
-  margin: 0 !important;
-
-  max-height: inherit;
+    margin: 0 !important;
+    max-height: inherit;
 }
 
 .ui.container {
-  width: 100% !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-
-  max-height: inherit;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    max-height: inherit;
+    display: flex;
+    flex: 1;
 }
 
-.ui.container.fullsize {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-
-  max-height: inherit;
-}
+    .ui.container.fullsize {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        max-height: inherit;
+    }
 
 .fullsize {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-
-  max-height: inherit;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    max-height: inherit;
 }
 
 .margin-top-1em {
-  margin-top: 1em;
+    margin-top: 1em;
 }
+
 .margin-left-1em {
-  margin-left: 1em;
+    margin-left: 1em;
 }
 
 .ui.button {
-  margin-right: 0 !important;
+    margin-right: 0 !important;
 }
 
 .visible.transition {
-  display: flex !important;
-  flex: 1;
+    display: flex !important;
+    flex: 1;
 }
 
 .version-text {
-  padding-bottom: 0.5em;
-  padding-right: 2em;
-  color: gray;
-  font-size: 1rem;
-  text-align: end; position: relative;
+    padding-bottom: 0.5em;
+    padding-right: 2em;
+    color: gray;
+    font-size: 1rem;
+    text-align: end;
+    position: relative;
+    margin-top: auto;
 }
 
 .notification {
-  position: absolute;
-  width: 100%;
-  bottom: 0;
-  float: right;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    float: right;
 }
 
 .successNotification {
-  background-color: forestgreen;
+    background-color: forestgreen;
 }
 
 .errorNotification {
-  background-color: darkred;
+    background-color: darkred;
 }
 
 .notificationText {
-  width: 100%;
-  text-align: center;
-  font-size: 1.5rem;
-  color: white;
+    width: 100%;
+    text-align: center;
+    font-size: 1.5rem;
+    color: white;
 }
 
 @media all and (display-mode: standalone) {
-  html {
-    height: 100vh;
-  }
+    html {
+        height: 100vh;
+    }
 
-  .App-header {
-    padding-top: 1em;
-    overflow: hidden;
-  }
+    .App-header {
+        padding-top: 1em;
+        overflow: hidden;
+    }
 
-  .fullsize {
-    overflow: hidden;
-  }
+    .fullsize {
+        overflow: hidden;
+    }
 
-  .notification {
-    padding-bottom: 1em;
-  }
+    .notification {
+        padding-bottom: 1em;
+    }
 }
 
 @media screen and (orientation: portrait) {
-  .landscape {
-    display: none !important;
-  }
+    .landscape {
+        display: none !important;
+    }
 }
 
 @media screen and (orientation: landscape) {
-  .portrait {
-    display: none !important;
-  }
+    .portrait {
+        display: none !important;
+    }
 
-  .fullsize {
-    padding-top: 0;
-    flex-direction: row;
-  }
+    .fullsize {
+        padding-top: 0;
+        flex-direction: row;
+    }
 }

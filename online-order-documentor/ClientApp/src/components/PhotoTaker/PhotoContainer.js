@@ -5,7 +5,7 @@ import './PhotoContainer.css';
 
 import { Button, Container } from 'semantic-ui-react';
 
-export default class PhotoConfirmation extends React.Component {
+export default class PhotoContainer extends React.Component {
 
     render () {
         const { onRemove, ...props } = this.props;
@@ -14,7 +14,7 @@ export default class PhotoConfirmation extends React.Component {
             <Container {...props}>
                 <img src={this.props.image} alt='camera'></img>
                 <div className='removePhoto'>
-                    <Button circular icon='close' color='grey' onClick={this.props.onRemove} />
+                    <Button circular icon='close' color='grey' onClick={this.props.onRemove} disabled={this.props.disabled} />
                 </div>
             </Container>
         )

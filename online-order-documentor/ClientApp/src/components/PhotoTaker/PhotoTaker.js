@@ -66,7 +66,7 @@ export default class PhotoTaker extends React.Component {
     }
 
     render () {
-        const { onSuccess, onError, ...props } = this.props;
+        const { onSuccess, ...props } = this.props;
 
         return (
             <Container {...props}>
@@ -86,7 +86,6 @@ export default class PhotoTaker extends React.Component {
                         barcode={this.props.barcode}
                         onCancel={this.props.onCancel}
                         onSuccess={this.props.onSuccess}
-                        onError={this.props.onError}
                         onPhotoRemove={this.removePhoto.bind(this)}
                         onPhotoAdd={() => this.setState({ confirmingPicture: false, addingPhoto: true })} />
                 </Transition>
