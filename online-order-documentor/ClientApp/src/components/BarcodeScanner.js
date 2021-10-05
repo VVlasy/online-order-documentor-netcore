@@ -7,7 +7,7 @@ import { Button, Container, Grid } from 'semantic-ui-react';
 import Quagga from '@ericblade/quagga2';
 
 export default class BarcodeScanner extends React.Component {
-    constructor (props) {
+    constructor(props) {
         super(props);
         this.barcodeVideoRef = React.createRef();
         this.barcodeRef = React.createRef();
@@ -19,11 +19,11 @@ export default class BarcodeScanner extends React.Component {
         };
     }
 
-    orientationChanged () {
+    orientationChanged() {
         this.refreshCamera();
     }
 
-    refreshCamera () {
+    refreshCamera() {
         Quagga.stop();
 
         this.setState({
@@ -33,8 +33,10 @@ export default class BarcodeScanner extends React.Component {
         setTimeout(() => this.startQuagga(), 100);
     }
 
-    componentDidMount () {
+    componentDidMount() {
         window.addEventListener('orientationchange', this.orientationChanged.bind(this));
+        document.addEventListener('keyup', this.logKey.bind(this));
+
 
         this.startQuagga();
 
@@ -44,7 +46,30 @@ export default class BarcodeScanner extends React.Component {
         //this.saveVideoObj();
     }
 
-    saveVideoObj () {
+    logKey(e) {
+        if (e.isComposing || e.keyCode === 229) {
+            return;
+        }
+
+        if (e.key === "Enter") {
+            if (this.state.scannedBarcode != this.noBarcodeValue) {
+                this.props.onConfirm(this.state.scannedBarcode)
+            }
+            
+
+            return;
+        }
+
+        const isLetter = (e.key >= "a" && e.key <= "z") || (e.key >= "A" && e.key <= "Z");
+        const isNumber = (e.key >= "0" && e.key <= "9");
+        if (e.key.length === 1 && isLetter || isNumber) {
+            this.setState({
+                scannedBarcode: this.state.scannedBarcode == this.noBarcodeValue ? e.key : this.state.scannedBarcode += e.key
+            });
+        }        
+    }
+
+    saveVideoObj() {
         if (this.barcodeVideoRef?.current.srcObject) {
             console.log('Found object');
             window.cachedVideoObject = this.barcodeVideoRef.current.srcObject;
@@ -55,7 +80,7 @@ export default class BarcodeScanner extends React.Component {
         }
     }
 
-    startQuagga () {
+    startQuagga() {
         Quagga.init(
             {
                 inputStream: {
@@ -86,7 +111,7 @@ export default class BarcodeScanner extends React.Component {
         );
     }
 
-    componentWillUnmount () {
+    componentWillUnmount() {
         try {
             window.removeEventListener('orientationchange', this.orientationChanged);
         }
@@ -104,7 +129,7 @@ export default class BarcodeScanner extends React.Component {
         Quagga.stop();
     }
 
-    render () {
+    render() {
         const { onConfirm, ...props } = this.props;
 
         return (<Container {...props}>
@@ -122,7 +147,7 @@ export default class BarcodeScanner extends React.Component {
                     </Grid.Row>
                     <Grid.Row>
                         <Grid.Column columns={1}>
-                            <p id='barcode'>{this.state.scannedBarcode}</p>
+                            <p className='barcode-text'>{this.state.scannedBarcode}</p>
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
@@ -142,14 +167,14 @@ export default class BarcodeScanner extends React.Component {
         </Container>);
     }
 
-    getMostOccuring (arr) {
+    getMostOccuring(arr) {
         return arr.sort((a, b) =>
             arr.filter(v => v === a).length
             - arr.filter(v => v === b).length
         ).pop();
     }
 
-    _getMedian (arr: number[]): number {
+    _getMedian(arr: number[]): number {
         arr.sort((a, b) => a - b);
         const half = Math.floor(arr.length / 2);
         if (arr.length % 2 === 1) // Odd length
