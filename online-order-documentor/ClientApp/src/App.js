@@ -58,10 +58,12 @@ export default class App extends React.Component {
     forceSWupdate() {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function (registrations) {
-                for (let registration of registrations) {
-                    registration.update()
-                }
+                registrations.map(r => {
+                    r.unregister()
+                })
             })
+
+            window.location.reload(true)
         }
     }
 
