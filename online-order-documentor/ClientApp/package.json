@@ -28,6 +28,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.18.3",
     "nan": "^2.14.1",
+    "semantic-release": "^18.0.0",
     "typescript": "^3.7.5"
   },
   "eslintConfig": {
@@ -51,5 +52,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "release": {
+    "branches": [ "main" ]
   }
 }
