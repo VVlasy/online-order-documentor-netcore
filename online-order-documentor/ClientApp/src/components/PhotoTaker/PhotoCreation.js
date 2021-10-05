@@ -43,7 +43,7 @@ export default class PhotoCreation extends React.Component {
             <div className='fullsize'>
                 <div className='photo-banner'>
                     <p>Naskenovaný kód:</p>
-                    <p>{this.props.barcode}</p>
+                    <p className='barcode-text'>{this.props.barcode}</p>
                     <p>Pořiďte fotku...</p>
                 </div>
 
