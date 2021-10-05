@@ -76,13 +76,14 @@ export default class PhotoConfirmation extends React.Component {
                                     className='photoContainer'
                                     key={index}
                                     image={value}
+                                    disabled={this.state.pictureUploading}
                                     onRemove={() => this.props.onPhotoRemove(index)} />;
                             })}
                         </Transition.Group>
 
 
                         <div className='addPhoto'>
-                            <Button circular size='massive' icon='add' onClick={this.props.onPhotoAdd} />
+                            <Button circular size='massive' icon='add' onClick={this.props.onPhotoAdd} disabled={this.state.pictureUploading} />
                         </div>
                     </div>
 
