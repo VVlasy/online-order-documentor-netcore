@@ -3,6 +3,8 @@ import React from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import './App.css';
 
+import axios from 'axios';
+
 import { Transition } from 'semantic-ui-react';
 
 import eventBus from "./helpers/EventBus.js";
@@ -29,6 +31,8 @@ export default class App extends React.Component {
         eventBus.on("showSuccess", (text) => {
             this.setState({ showSuccess: true });
         });
+
+        this.checkUpdates();
     }
 
     onSuccessAnimationFinish() {
@@ -39,11 +43,32 @@ export default class App extends React.Component {
         setTimeout(() => this.setState({ showError: false }), 5000);
     }
 
+    checkUpdates() {
+        axios.get('/api/ClientApp/version').then((response) => {
+            if (version !== response.data) {
+                console.log("Versions dont match! Updating...");
+                this.forceSWupdate();
+            }
+        }).catch((err) => {
+            console.log("Check update failed");
+        });
+    }
+
+    forceSWupdate() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                for (let registration of registrations) {
+                    registration.update()
+                }
+            })
+        }
+    }
+
     render() {
         return (
             <div className="App">
                 <header className="App-header">
-                    <PhotoDocumentor/>
+                    <PhotoDocumentor />
 
                     <div className='version-text'>
                         Verze: {version}
