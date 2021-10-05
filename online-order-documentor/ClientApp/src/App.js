@@ -54,6 +54,7 @@ export default class App extends React.Component {
         });
     }
 
+
     forceSWupdate() {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function (registrations) {
