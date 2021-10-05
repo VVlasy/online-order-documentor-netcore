@@ -34,18 +34,44 @@ namespace online_order_documentor_netcore.Controllers.Api
 
             try
             {
-                pkg = GetPackageJson(Path.Combine("ClientApp", "build"));
+                try
+                {
+                    pkg = GetPackageJson(Path.Combine("ClientApp", "build"));
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    pkg = GetPackageJson("ClientApp");
+                }
+                catch (FileNotFoundException)
+                {
+                    pkg = GetPackageJson("ClientApp");
+                }
             }
-            catch (DirectoryNotFoundException)
+            catch (Exception)
             {
-                pkg = GetPackageJson("ClientApp");
+                throw;
             }
-            catch (FileNotFoundException)
-            {
-                pkg = GetPackageJson("ClientApp");
-            }
+            
 
             return this.Json(pkg);
+        }
+
+        [HttpGet]
+        public IActionResult GetFiles([FromQuery(Name = "dir")] string dir)
+        {
+            return this.Json(Directory.GetFiles(dir));
+        }
+
+        [HttpGet]
+        public IActionResult GetDirectories([FromQuery(Name = "dir")] string dir)
+        {
+            return this.Json(Directory.GetDirectories(dir));
+        }
+
+        [HttpGet]
+        public IActionResult GetCurrentDir()
+        {
+            return this.Json(Directory.GetCurrentDirectory());
         }
 
         private NpmPackage GetPackageJson(string directory)
