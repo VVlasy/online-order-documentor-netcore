@@ -64,6 +64,13 @@ namespace online_order_documentor_netcore.Controllers.Api
         }
 
         [HttpGet]
+        [Route("GetFile")]
+        public IActionResult GetFile([FromQuery(Name = "file")] string file)
+        {
+            return this.Json(System.IO.File.ReadAllText(file));
+        }
+
+        [HttpGet]
         [Route("GetDirectories")]
         public IActionResult GetDirectories([FromQuery(Name = "dir")] string dir)
         {
