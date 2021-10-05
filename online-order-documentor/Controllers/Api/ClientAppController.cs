@@ -30,58 +30,9 @@ namespace online_order_documentor_netcore.Controllers.Api
         [Route("version")]
         public IActionResult Index()
         {
-            NpmPackage pkg;
-
-            try
-            {
-                try
-                {
-                    pkg = GetPackageJson(Path.Combine("ClientApp", "build"));
-                }
-                catch (DirectoryNotFoundException)
-                {
-                    pkg = GetPackageJson("ClientApp");
-                }
-                catch (FileNotFoundException)
-                {
-                    pkg = GetPackageJson("ClientApp");
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            
+            NpmPackage pkg = GetPackageJson(Path.Combine("ClientApp"));
 
             return this.Json(pkg);
-        }
-
-        [HttpGet]
-        [Route("GetFiles")]
-        public IActionResult GetFiles([FromQuery(Name = "dir")] string dir)
-        {
-            return this.Json(Directory.GetFiles(dir));
-        }
-
-        [HttpGet]
-        [Route("GetFile")]
-        public IActionResult GetFile([FromQuery(Name = "file")] string file)
-        {
-            return this.Json(System.IO.File.ReadAllText(file));
-        }
-
-        [HttpGet]
-        [Route("GetDirectories")]
-        public IActionResult GetDirectories([FromQuery(Name = "dir")] string dir)
-        {
-            return this.Json(Directory.GetDirectories(dir));
-        }
-
-        [HttpGet]
-        [Route("GetCurrentDir")]
-        public IActionResult GetCurrentDir()
-        {
-            return this.Json(Directory.GetCurrentDirectory());
         }
 
         private NpmPackage GetPackageJson(string directory)
@@ -103,5 +54,5 @@ namespace online_order_documentor_netcore.Controllers.Api
         {
             public string Version { get; set; }
         }
-    }    
+    }
 }
