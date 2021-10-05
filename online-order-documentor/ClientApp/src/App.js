@@ -45,9 +45,16 @@ export default class App extends React.Component {
 
     checkUpdates() {
         axios.get('/api/ClientApp/version').then((response) => {
-            if (version !== response.data) {
+            if (response.data.version === undefined) {
+                console.error("Api result invalid");
+                return;
+            }
+
+            if (version !== response.data.version) {
                 console.log("Versions dont match! Updating...");
                 this.forceSWupdate();
+            } else {
+                console.log("Version is up to date");
             }
         }).catch((err) => {
             console.log("Check update failed");
@@ -59,11 +66,10 @@ export default class App extends React.Component {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function (registrations) {
                 registrations.map(r => {
-                    r.unregister()
-                })
-            })
-
-            window.location.reload(true)
+                    r.unregister();
+                });
+            });
+            window.location.reload(true);
         }
     }
 
