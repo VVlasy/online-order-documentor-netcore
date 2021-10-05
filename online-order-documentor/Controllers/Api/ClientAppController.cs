@@ -19,20 +19,48 @@ namespace online_order_documentor_netcore.Controllers.Api
     [Route("api/[controller]")]
     public class ClientAppController : Controller
     {
+        private IWebHostEnvironment _env;
+
+        public ClientAppController(IWebHostEnvironment env)
+        {
+            _env = env;
+        }
+
         [HttpGet]
         [Route("version")]
-        public IActionResult Index([FromServices] IWebHostEnvironment env)
+        public IActionResult Index()
         {
-            var files = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "ClientApp"));
-            var pkg = files.GetFileInfo("package.json");
-            
+            NpmPackage pkg;
+
+            try
+            {
+                pkg = GetPackageJson(Path.Combine("ClientApp", "build"));
+            }
+            catch (DirectoryNotFoundException)
+            {
+                pkg = GetPackageJson("ClientApp");
+            }
+            catch (FileNotFoundException)
+            {
+                pkg = GetPackageJson("ClientApp");
+            }
+
+            return this.Json(pkg);
+        }
+
+        private NpmPackage GetPackageJson(string directory)
+        {
+            PhysicalFileProvider provider = new PhysicalFileProvider(Path.Combine(_env.ContentRootPath, directory)); ;
+
+            var pkg = provider.GetFileInfo("package.json");
+
             var serializer = new JsonSerializer();
 
             using (var sr = new StreamReader(pkg.CreateReadStream()))
             using (var jsonTextReader = new JsonTextReader(sr))
             {
-                return this.Json(serializer.Deserialize<NpmPackage>(jsonTextReader).Version);
-            }           
+                return serializer.Deserialize<NpmPackage>(jsonTextReader);
+            }
         }
 
         private class NpmPackage
