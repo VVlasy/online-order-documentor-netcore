@@ -87,38 +87,6 @@ div.ui.grid {
     flex: 1;
 }
 
-.version-text {
-    padding-bottom: 0.5em;
-    padding-right: 2em;
-    color: gray;
-    font-size: 1rem;
-    text-align: end;
-    position: relative;
-    margin-top: auto;
-}
-
-.notification {
-    position: absolute;
-    width: 100%;
-    bottom: 0;
-    float: right;
-}
-
-.successNotification {
-    background-color: forestgreen;
-}
-
-.errorNotification {
-    background-color: darkred;
-}
-
-.notificationText {
-    width: 100%;
-    text-align: center;
-    font-size: 1.5rem;
-    color: white;
-}
-
 @media all and (display-mode: standalone) {
     html {
         height: 100vh;
@@ -131,10 +99,6 @@ div.ui.grid {
 
     .fullsize {
         overflow: hidden;
-    }
-
-    .notification {
-        padding-bottom: 1em;
     }
 }
 
