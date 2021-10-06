@@ -93,11 +93,10 @@ export default class App extends React.Component {
     render() {
         return (
             <Container className='version-text'>
+                <p>Verze: {version}</p>
+
                 <Loader active={this.state.remoteVersion === ""} inline size='mini' />
                 {this.UpdateState()}
-
-                Verze: {version}
-
 
 
                     <Transition visible={this.state.showSuccess}
