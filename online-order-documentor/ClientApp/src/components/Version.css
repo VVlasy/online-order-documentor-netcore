@@ -8,6 +8,11 @@
     margin-top: auto;
 }
 
+.version-text > p {
+    display: inline;
+    margin-right: 0.5em;
+}
+
 .ui.container.version-text {
     display: block;
     flex: none;
