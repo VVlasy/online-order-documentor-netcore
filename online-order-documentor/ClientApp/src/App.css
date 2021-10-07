@@ -1,7 +1,8 @@
-html {
-    overflow: hidden;
+html, body {
     height: 100%;
+    display: flex;
     max-width: 100vw;
+    overflow: hidden;
 }
 
 body {
@@ -17,6 +18,8 @@ body {
     flex: 1;
     align-self: flex-start;
     min-height: 100%;
+    background-color: black;
+    position: fixed;
 }
 
 .App {
