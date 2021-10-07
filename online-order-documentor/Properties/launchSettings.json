@@ -26,7 +26,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "FTP_AVAILABILITY_XML_PATH": "homes/sklad premier/sklad.xml",
         "FTP_PASS": "&!5eTb",
-        "FTP_PHOTOS_FOLDER_PATH": "SCAN/objednavky-victor-test"
+        "FTP_PHOTOS_FOLDER_PATH": "SCAN/objednavky-test"
       },
       "applicationUrl": "https://localhost:5001;http://localhost:5000"
     }

@@ -6,6 +6,7 @@ import './App.css';
 import PhotoDocumentor from './PhotoDocumentor';
 import Version from './components/Version';
 
+import eventBus from './helpers/EventBus';
 
 import ErrorNotFound from './components/ErrorNotFound';
 
@@ -21,21 +22,31 @@ export default class App extends React.Component {
         super(props);
         this.cameraRef = React.createRef();
         this.state = {
-            width: window.innerWidth
+            width: window.innerWidth,
+            updateStarted: false
         };
 
         window.eventsHooked = false;
     }
 
-    forceSWupdate() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function (registrations) {
-                registrations.map(r => {
-                    r.unregister();
-                });
-            });
-            window.location.reload(true);
+    componentDidMount() {
+        eventBus.on('updateStarted', () => {
+            this.setState({ updateStarted: true });
+        });
+    }
+
+    routerRender() {
+        if (this.state.updateStarted) {
+            return (<div style={{ margin: 'auto' }}>Aktualizace...</div>);
         }
+
+        return (<Switch><Route exact path="/">
+                                <PhotoDocumentor />
+                            </Route>
+                            <Route path='*' exact={true}>
+                                <ErrorNotFound />
+                            </Route>
+                        </Switch>);
     }
 
     render() {
@@ -43,14 +54,7 @@ export default class App extends React.Component {
             <Router>
                 <div className="App">
                     <header className="App-header">
-                        <Switch>
-                            <Route exact path="/">
-                                <PhotoDocumentor />
-                            </Route>
-                            <Route path='*' exact={true}>
-                                <ErrorNotFound />
-                            </Route>
-                        </Switch>
+                        {this.routerRender()}
 
                         <Version />
                     </header>

@@ -1,7 +1,8 @@
-html {
-    overflow: hidden;
+html, body {
     height: 100%;
+    display: flex;
     max-width: 100vw;
+    overflow: hidden;
 }
 
 body {
@@ -12,11 +13,15 @@ body {
 }
 
 #root {
+    max-height: 100%;
+    width: 100%;
     display: flex;
     align-content: stretch;
     flex: 1;
     align-self: flex-start;
     min-height: 100%;
+    background-color: black;
+    position: fixed;
 }
 
 .App {
@@ -49,12 +54,19 @@ div.ui.grid {
 }
 
 .ui.container {
+    max-height: 100% !important;
     width: 100% !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
     max-height: inherit;
     display: flex;
     flex: 1;
+    min-height: 0;
+    height: 100%;
+}
+
+.App-header > .ui.container {
+    height: unset;
 }
 
     .ui.container.fullsize {

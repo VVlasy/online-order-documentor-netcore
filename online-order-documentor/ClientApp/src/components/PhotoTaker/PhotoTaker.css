@@ -12,6 +12,9 @@
     flex-direction: row;
 }
 
+.barcode-text {
+    overflow-wrap: anywhere;
+}
 
 @media screen and (orientation: landscape) {
     .photo-banner {
