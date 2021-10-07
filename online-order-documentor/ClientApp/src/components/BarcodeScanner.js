@@ -87,6 +87,8 @@ export default class BarcodeScanner extends React.Component {
                     name: 'Live',
                     type: 'LiveStream',
                     constraints: {
+                        width: 480,
+                        height: 480,
                         facingMode: 'environment'
                     },
                     target: this.barcodeRef.current
@@ -129,15 +131,21 @@ export default class BarcodeScanner extends React.Component {
         Quagga.stop();
     }
 
+    quaggaButtons() {
+        if (this.props.showButtons) {
+            return (<div className={'quagga-buttons'}>
+                <Button className='docsIcon margin-top-1em disabled' circular icon='info' onClick={() => window.location.href = '/api-docs'} />
+                <Button className='refreshButton' circular icon='refresh' onClick={this.refreshCamera.bind(this)} />
+            </div>);
+        }        
+    }
+
     render() {
         const { onConfirm, ...props } = this.props;
 
         return (<Container {...props}>
             <div className='fullsize'>
-                <div className={'quagga-buttons'}>
-                    <Button className='docsIcon margin-top-1em disabled' circular icon='info' onClick={() => window.location.href = '/api-docs'} />
-                    <Button className='refreshButton' circular icon='refresh' onClick={this.refreshCamera.bind(this)} />
-                </div>
+                {this.quaggaButtons()}
 
                 <Grid className={'photo-banner'}>
                     <Grid.Row columns={1}>

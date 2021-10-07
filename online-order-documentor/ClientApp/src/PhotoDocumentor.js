@@ -51,7 +51,7 @@ export default class PhotoDocumentor extends React.Component {
                 <BarcodeScannerError>
                     <Transition animation="fade" duration={250} visible={this.state.scanningBarcode} unmountOnHide={true}
                         onHide={() => this.setState({ takingPicture: true })}>
-                        <BarcodeScanner onConfirm={this.barcodeConfirmClick.bind(this)} />
+                        <BarcodeScanner onConfirm={this.barcodeConfirmClick.bind(this)} showButtons={true }/>
                     </Transition>
                 </BarcodeScannerError>
 

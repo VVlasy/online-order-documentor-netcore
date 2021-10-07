@@ -6,6 +6,10 @@
     overflow: auto;
     -webkit-overflow-scrolling: touch;
   }
+
+.confirmingDiv > .ui.container {
+    height: unset;
+}
   
   .loaderDiv {
     position: fixed;

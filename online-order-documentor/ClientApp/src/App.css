@@ -13,6 +13,8 @@ body {
 }
 
 #root {
+    max-height: 100%;
+    width: 100%;
     display: flex;
     align-content: stretch;
     flex: 1;
@@ -52,12 +54,19 @@ div.ui.grid {
 }
 
 .ui.container {
+    max-height: 100% !important;
     width: 100% !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
     max-height: inherit;
     display: flex;
     flex: 1;
+    min-height: 0;
+    height: 100%;
+}
+
+.App-header > .ui.container {
+    height: unset;
 }
 
     .ui.container.fullsize {
