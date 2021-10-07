@@ -93,7 +93,7 @@ export default class App extends React.Component {
     render() {
         return (
             <Container className='version-text'>
-                <p>Verze: {version}</p>
+                <p onClick={this.forceSWupdate.bind(this)}>Verze: {version}</p>
 
                 <Loader active={this.state.remoteVersion === ""} inline size='mini' />
                 {this.UpdateState()}

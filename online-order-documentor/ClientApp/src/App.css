@@ -1,11 +1,12 @@
-html {
-    overflow: hidden;
+html, body {
     height: 100%;
+    display: flex;
     max-width: 100vw;
+    overflow: hidden;
 }
 
 body {
-    overflow: auto;
+    overflow: hidden;
     height: 100%;
     display: flex;
     max-width: inherit;
@@ -17,6 +18,8 @@ body {
     flex: 1;
     align-self: flex-start;
     min-height: 100%;
+    background-color: black;
+    position: fixed;
 }
 
 .App {
