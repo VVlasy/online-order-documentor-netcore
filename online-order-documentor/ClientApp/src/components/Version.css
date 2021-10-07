@@ -33,6 +33,10 @@
     background-color: darkred;
 }
 
+.warningNotification {
+    background-color: darkorange;
+}
+
 .notificationText {
     width: 100%;
     text-align: center;

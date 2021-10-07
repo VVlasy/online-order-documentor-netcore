@@ -141,7 +141,7 @@ export default class BarcodeScanner extends React.Component {
     }
 
     render() {
-        const { onConfirm, ...props } = this.props;
+        const { onConfirm, showButtons, ...props } = this.props;
 
         return (<Container {...props}>
             <div className='fullsize'>
