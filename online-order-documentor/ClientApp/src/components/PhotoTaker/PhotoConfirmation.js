@@ -39,9 +39,9 @@ export default class PhotoConfirmation extends React.Component {
             }
         }).then((response) => {
             this.props.onSuccess();
-            eventBus.dispatch("showSuccess", "");
+            eventBus.dispatch("showSuccess", "Fotka byla nahrána");
         }).catch((err) => {
-            eventBus.dispatch("showError", "");
+            eventBus.dispatch("showError", "Chyba při nahrávání fotky!");
             this.setState({
                 pictureUploading: false
             });

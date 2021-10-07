@@ -17,9 +17,15 @@ export default class App extends React.Component {
         this.state = {
             width: window.innerWidth,
             showSuccess: false,
+            successText: "",
             showError: false,
+            errorText: "",
+            showWarning: false,
+            warningText: "",
+
             remoteVersion: "",
-            versionsMatch: false
+            versionsMatch: false,
+            userUpdateNotified: false
         };
 
         window.eventsHooked = false;
@@ -27,13 +33,27 @@ export default class App extends React.Component {
 
     componentDidMount() {
         eventBus.on("showError", (text) => {
-            this.setState({ showError: true });
+            this.setState({
+                showError: true,
+                errorText: text
+            });
         });
         eventBus.on("showSuccess", (text) => {
-            this.setState({ showSuccess: true });
+            this.setState({
+                showSuccess: true,
+                successText: text
+            });
+        });
+        eventBus.on("showWarning", (text) => {
+            this.setState({
+                showWarning: true,
+                warningText: text
+            });
         });
 
-        this.checkUpdates();
+        this.checkUpdates(false);
+
+        setInterval(() => this.checkUpdates(true), 60 * 1000);
     }
 
     onSuccessAnimationFinish() {
@@ -44,7 +64,11 @@ export default class App extends React.Component {
         setTimeout(() => this.setState({ showError: false }), 5000);
     }
 
-    checkUpdates() {
+    onWarningAnimationFinish() {
+        setTimeout(() => this.setState({ showWarning: false }), 5000);
+    }
+
+    checkUpdates(isPeriodic) {
         axios.get('/api/ClientApp/version').then((response) => {
             if (response.data.version === undefined) {
                 console.error("Api result invalid");
@@ -56,12 +80,23 @@ export default class App extends React.Component {
                 versionsMatch: version === response.data.version
             });
 
-            if (version !== response.data.version) {
-                console.log("Versions dont match! Updating...");
-                this.forceSWupdate();
+            if (!isPeriodic) {
+                if (version !== response.data.version) {
+                    console.log("Versions dont match! Updating...");
+                    this.forceSWupdate();
+                } else {
+                    console.log("Version is up to date");
+                }
             } else {
-                console.log("Version is up to date");
+                if (version !== response.data.version && !this.state.userUpdateNotified) {
+                    this.setState({
+                        userUpdateNotified: true
+                    });
+
+                    eventBus.dispatch("showWarning", "Nový update k dispozici! Klikněte vpravo dole na verzi pro update...");
+                }
             }
+
         }).catch((err) => {
             console.log("Check update failed");
         });
@@ -73,19 +108,21 @@ export default class App extends React.Component {
         }
 
         if (this.state.versionsMatch) {
-            return (<Icon color='green' name='check circle'/>);
+            return (<Icon color='green' name='check circle' />);
         } else {
             return (<Icon color='yellow' name='warning circle' />);
         }
     }
 
     forceSWupdate() {
+        eventBus.dispatch("updateStarted", "");
+
         if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.getRegistrations().then(function (registrations) {
-                        registrations.map(r => {
-                            r.unregister();
-                        });
-                    });
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                registrations.map(r => {
+                    r.unregister();
+                });
+            });
             window.location.reload(true);
         }
     }
@@ -93,30 +130,39 @@ export default class App extends React.Component {
     render() {
         return (
             <Container className='version-text'>
-                <p onClick={this.forceSWupdate.bind(this)}>Verze: {version}</p>
+                <p onClick={this.state.remoteVersion !== version ? () => this.forceSWupdate() : null}>Verze: {version}</p>
 
                 <Loader active={this.state.remoteVersion === ""} inline size='mini' />
                 {this.UpdateState()}
 
 
-                    <Transition visible={this.state.showSuccess}
-                        onShow={this.onSuccessAnimationFinish.bind(this)}
-                        duration={250}
-                        animation='slide up'>
-                        <div className='notification successNotification'>
-                            <p className='notificationText'>Fotka byla nahrána</p>
-                        </div>
-                    </Transition>
+                <Transition visible={this.state.showSuccess}
+                    onShow={this.onSuccessAnimationFinish.bind(this)}
+                    duration={250}
+                    animation='slide up'>
+                    <div className='notification successNotification'>
+                        <p className='notificationText'>{this.state.successText}</p>
+                    </div>
+                </Transition>
 
-                    <Transition visible={this.state.showError}
-                        onShow={this.onErrorAnimationFinish.bind(this)}
-                        duration={250}
-                        animation='slide up'>
-                        <div className='notification errorNotification'>
-                            <p className='notificationText'>Chyba při nahrávání fotky</p>
-                        </div>
-                    </Transition>
-                </Container>
+                <Transition visible={this.state.showError}
+                    onShow={this.onErrorAnimationFinish.bind(this)}
+                    duration={250}
+                    animation='slide up'>
+                    <div className='notification errorNotification'>
+                        <p className='notificationText'>{this.state.errorText}</p>
+                    </div>
+                </Transition>
+
+                <Transition visible={this.state.showWarning}
+                    onShow={this.onWarningAnimationFinish.bind(this)}
+                    duration={250}
+                    animation='slide up'>
+                    <div className='notification warningNotification'>
+                        <p className='notificationText'>{this.state.warningText}</p>
+                    </div>
+                </Transition>
+            </Container>
         );
     }
 }
