@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -57,7 +59,16 @@ namespace online_order_documentor_netcore.Providers
                             foreach (XmlNode childNode in srcFile.LastChild.ChildNodes.Cast<XmlNode>())
                             {
                                 string id = childNode.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec01").InnerText;
-                                int stockAmount = int.Parse(childNode.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec04").InnerText.Replace(",00", string.Empty).Replace(" ", string.Empty));
+                                int stockAmount = -1;
+
+                                try
+                                {
+                                    stockAmount = (int)double.Parse(childNode.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec04").InnerText.Replace(",", ".").Replace(" ", string.Empty), CultureInfo.InvariantCulture);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(ex.Message);
+                                }
 
                                 // check if we already have a node with this id
                                 if (resultXml.LastChild.ChildNodes.Cast<XmlNode>().Any(x => x.ChildNodes.Cast<XmlNode>().Any(y => y.Name == "sloupec01" && y.InnerText == id)))
@@ -65,7 +76,17 @@ namespace online_order_documentor_netcore.Providers
                                     XmlNode resultFoundNode = resultXml.LastChild.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.ChildNodes.Cast<XmlNode>().Any(y => y.Name == "sloupec01" && y.InnerText == id));
                                     XmlNode resultstockAmountNode = resultFoundNode.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec04");
 
-                                    var stockAmountResult = int.Parse(resultstockAmountNode.InnerText.Replace(",00", string.Empty).Replace(" ", string.Empty));
+                                    int stockAmountResult = -1;
+
+                                    try
+                                    {
+                                        stockAmountResult = (int)double.Parse(resultstockAmountNode.InnerText.Replace(",", ".").Replace(" ", string.Empty), CultureInfo.InvariantCulture);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Console.WriteLine(ex.Message);
+                                    }
+
                                     resultstockAmountNode.InnerText = $"{stockAmount + stockAmountResult},00";
                                 }
                                 else
