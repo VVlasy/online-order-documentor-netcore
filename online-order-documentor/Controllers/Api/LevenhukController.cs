@@ -63,12 +63,44 @@ namespace online_order_documentor_netcore.Controllers.Api
                     switch (polozkaProperty.Name)
                     {
                         case "OBRAZEK":
-                            XmlNode imagesNode = shoptetFeed.CreateNode(XmlNodeType.Element, "IMAGES", string.Empty);
-                            XmlNode imageNode = shoptetFeed.CreateNode(XmlNodeType.Element, "IMAGE", string.Empty);
-                            imageNode.InnerText = polozkaProperty.InnerText;
-                            imagesNode.AppendChild(imageNode);
+                            {
+                                XmlNodeList imagesNodeList = newNode.SelectNodes("IMAGES");
+                                XmlNode imagesNode;
+                                if (imagesNodeList.Count == 0)
+                                {
+                                    imagesNode = shoptetFeed.CreateNode(XmlNodeType.Element, "IMAGES", string.Empty);
+                                    newNode.AppendChild(imagesNode);
+                                }
+                                else
+                                {
+                                    imagesNode = imagesNodeList.Item(0);
+                                }
 
-                            newNode.AppendChild(imagesNode);
+                                XmlNode imageNode = shoptetFeed.CreateNode(XmlNodeType.Element, "IMAGE", string.Empty);
+                                imageNode.InnerText = polozkaProperty.InnerText;
+                                imagesNode.AppendChild(imageNode);
+                            }
+
+                            break;
+                        case "OBRAZKY_DALSI":
+                            foreach (XmlNode obrazek in polozkaProperty.ChildNodes)
+                            {
+                                XmlNodeList imagesNodeList = newNode.SelectNodes("IMAGES");
+                                XmlNode imagesNode;
+                                if (imagesNodeList.Count == 0)
+                                {
+                                    imagesNode = shoptetFeed.CreateNode(XmlNodeType.Element, "IMAGES", string.Empty);
+                                    newNode.AppendChild(imagesNode);
+                                }
+                                else
+                                {
+                                    imagesNode = imagesNodeList.Item(0);
+                                }
+
+                                XmlNode imageNode = shoptetFeed.CreateNode(XmlNodeType.Element, "IMAGE", string.Empty);
+                                imageNode.InnerText = obrazek.InnerText;
+                                imagesNode.AppendChild(imageNode);
+                            }
                             break;
                         case "ZASOBA":
                             XmlNode stockNode = shoptetFeed.CreateNode(XmlNodeType.Element, "STOCK", string.Empty);
