@@ -81,12 +81,7 @@ namespace online_order_documentor_netcore.Controllers.Api
                 .Select(x => x.ChildNodes.Cast<XmlNode>().Where(x => x.Name == "EAN").Select(x => x.InnerText))
                 .Select(x => x.FirstOrDefault()).Cast<string>();
 
-            IEnumerable<string> setosEans = SetosController.GetShoptetFeed().ChildNodes[0].ChildNodes.Cast<XmlNode>()
-                .Select(x => x.ChildNodes.Cast<XmlNode>().Where(x => x.Name == "EAN").Select(x => x.InnerText))
-                .Select(x => x.FirstOrDefault()).Cast<string>();
-
             List<string> eansToRemove = levenhukEans.ToList();
-            eansToRemove.AddRange(setosEans);
 
             feed = Tools.CreateAvailabilityFeedShoptet(feed, eansToRemove);
 
