@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -163,6 +164,15 @@ namespace online_order_documentor_netcore.Controllers
                 int amount;
                 if (!string.IsNullOrEmpty(key) && !stockData.ContainsKey(key) && int.TryParse(stringAmount, out amount))
                 {
+                    if (amount < 0)
+                    {  // prevent stock amount to go below 0, fix for accounting system deficiencies
+                        var infoText = $"Normalized stock amount: [{key}]: {amount} -> 0";
+                        Trace.WriteLine(infoText);
+                        Debug.WriteLine(infoText);
+                        Console.WriteLine(infoText);
+                        amount = 0;
+                    }
+
                     stockData.Add(key, amount);
                 }
             }
