@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using MimeTypes;
 using online_order_documentor_netcore.Models;
+using online_order_documentor_netcore.Providers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 
 namespace online_order_documentor_netcore.Controllers.Api
@@ -16,9 +18,16 @@ namespace online_order_documentor_netcore.Controllers.Api
     [Route("api/digi-eshop")]
     public class DigieshopController : Controller
     {
+        private ResponseCache<object> _cache;
+
+        public DigieshopController(CacheProvider cacheProvider)
+        {
+            _cache = cacheProvider.GetCache<object>("Digieshop");
+        }
+
         [HttpGet]
         [Route("{**filter}")]
-        public IActionResult Crossroad(string filter)
+        public async Task<IActionResult> Crossroad(string filter)
         {
             string[] filters = filter.Split('/');
             string destination = filters[filters.Length - 1];
@@ -40,15 +49,21 @@ namespace online_order_documentor_netcore.Controllers.Api
                 }
             }
 
-
+            string key;
             switch (destination)
             {
                 case "data.xml":
-                    return DataFeed(brands, eans);
+                    key = $"data.xml&{string.Join(";", brands)}&{string.Join(";", eans)}";
+                    _cache.Register(key, () => DataFeed(brands, eans));
+                    return await _cache.Get(key) as IActionResult;
                 case "availability.xml":
-                    return AvailabilityFeed(brands, eans);
+                    key = $"availability.xml&{string.Join(";", brands)}&{string.Join(";", eans)}";
+                    _cache.Register(key, () => AvailabilityFeed(brands, eans));
+                    return await _cache.Get(key) as IActionResult;
                 case "availability-shoptet.xml":
-                    return ShoptetAvailabilityFeed(brands, eans);
+                    key = $"availability-shoptet.xml&{string.Join(";", brands)}&{string.Join(";", eans)}";
+                    _cache.Register(key, () => ShoptetAvailabilityFeed(brands, eans));
+                    return await _cache.Get(key) as IActionResult;
                 default:
                     return base.BadRequest("Invalid Path");
             }

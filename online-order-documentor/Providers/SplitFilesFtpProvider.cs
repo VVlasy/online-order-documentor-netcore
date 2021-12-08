@@ -67,7 +67,7 @@ namespace online_order_documentor_netcore.Providers
                                 }
                                 catch (Exception ex)
                                 {
-                                    Console.WriteLine(ex.Message);
+                                    // Console.WriteLine(ex.Message);
                                 }
 
                                 // check if we already have a node with this id
@@ -84,7 +84,7 @@ namespace online_order_documentor_netcore.Providers
                                     }
                                     catch (Exception ex)
                                     {
-                                        Console.WriteLine(ex.Message);
+                                        // Console.WriteLine(ex.Message);
                                     }
 
                                     resultstockAmountNode.InnerText = $"{stockAmount + stockAmountResult},00";
