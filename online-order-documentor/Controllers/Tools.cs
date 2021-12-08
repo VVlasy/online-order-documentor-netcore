@@ -167,9 +167,9 @@ namespace online_order_documentor_netcore.Controllers
                     if (amount < 0)
                     {  // prevent stock amount to go below 0, fix for accounting system deficiencies
                         var infoText = $"Normalized stock amount: [{key}]: {amount} -> 0";
-                        Trace.WriteLine(infoText);
-                        Debug.WriteLine(infoText);
-                        Console.WriteLine(infoText);
+                        //Trace.WriteLine(infoText);
+                        //Debug.WriteLine(infoText);
+                        // Console.WriteLine(infoText);
                         amount = 0;
                     }
 
