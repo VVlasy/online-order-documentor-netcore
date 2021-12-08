@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using online_order_documentor_netcore.Providers;
 using System;
 
 namespace online_order_documentor_netcore
@@ -50,11 +51,12 @@ namespace online_order_documentor_netcore
                 }
                 else
                 {
-                    Console.WriteLine("Using InMemory Database");
+                    // Console.WriteLine("Using InMemory Database");
                     options.UseInMemoryDatabase("main");
                 }
             });
 
+            services.AddSingleton<CacheProvider>();
             services.AddControllersWithViews();
 
             // In production, the React files will be served from this directory

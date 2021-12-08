@@ -49,7 +49,7 @@ namespace online_order_documentor_netcore.Providers
 
             using (var resp = (FtpWebResponse)request.GetResponse())
             {
-                Console.WriteLine(resp.StatusCode);
+                // Console.WriteLine(resp.StatusCode);
             }
         }
         public void ClearFolder(string name)
@@ -66,12 +66,12 @@ namespace online_order_documentor_netcore.Providers
 
                     using (var resp = (FtpWebResponse)request.GetResponse())
                     {
-                        Console.WriteLine(resp.StatusCode);
+                        // Console.WriteLine(resp.StatusCode);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
+                    // Console.WriteLine(ex);
                     continue;
                 }
             }
@@ -86,7 +86,7 @@ namespace online_order_documentor_netcore.Providers
 
             using (var resp = (FtpWebResponse)request.GetResponse())
             {
-                Console.WriteLine(resp.StatusCode);
+                // Console.WriteLine(resp.StatusCode);
             }
         }
         public bool FolderExists(string name)
@@ -100,13 +100,13 @@ namespace online_order_documentor_netcore.Providers
                 request.Credentials = new NetworkCredential(AppVariables.FtpUsername, AppVariables.FtpPassword);
                 using (var resp = (FtpWebResponse)request.GetResponse())
                 {
-                    Console.WriteLine(resp.StatusCode);
+                    // Console.WriteLine(resp.StatusCode);
                 }
                 return true;
             }
             catch (WebException ex)
             {
-                Console.WriteLine(ex);
+                // Console.WriteLine(ex);
                 return false;
             }
         }
@@ -133,7 +133,7 @@ namespace online_order_documentor_netcore.Providers
             }
             catch (WebException ex)
             {
-                Console.WriteLine(ex);
+                // Console.WriteLine(ex);
                 return new string[] { };
             }
         }
