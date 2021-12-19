@@ -44,7 +44,7 @@ namespace online_order_documentor_netcore.Controllers.Api
         [Route("premier")]
         public IActionResult PremierInfo()
         {
-            return this.Json(_premierApiService.ApiVersion);
+            return this.Json(PremierApiService.ApiVersion);
         }
 
         private NpmPackage GetPackageJson(string directory)
