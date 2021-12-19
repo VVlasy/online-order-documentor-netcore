@@ -57,6 +57,7 @@ namespace online_order_documentor_netcore
             });
 
             services.AddSingleton<CacheProvider>();
+            services.AddSingleton(new PremierApiService());
             services.AddControllersWithViews();
 
             // In production, the React files will be served from this directory
