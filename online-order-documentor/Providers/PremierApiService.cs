@@ -56,26 +56,28 @@ namespace online_order_documentor_netcore.Providers
             PremierApiVersion version = null;
             var r = Get_req(JsonConvert.SerializeObject(new PremierRequest("VERZEAPI")));
 
-            HttpResponseMessage response = await _client.SendAsync(r);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                // Fix for wrong utf 8 calculation on Premier side
+                HttpResponseMessage response = await _client.SendAsync(r);
 
-                var stream = await response.Content.ReadAsStreamAsync();
-
-                StreamReader reader = new StreamReader(stream);
-                string jsonString = reader.ReadToEnd();
-
-                try
+                if (response.IsSuccessStatusCode)
                 {
+                    // Fix for wrong utf 8 calculation on Premier side
+
+                    var stream = await response.Content.ReadAsStreamAsync();
+
+                    StreamReader reader = new StreamReader(stream);
+                    string jsonString = reader.ReadToEnd();
+
+
                     PremierResponse result = JsonConvert.DeserializeObject<PremierResponse>(jsonString);
                     version = result.Data.ToObject<PremierApiVersion>();
-                }
-                catch 
-                {
 
                 }
+            }
+            catch
+            {
+
             }
 
             return version;
