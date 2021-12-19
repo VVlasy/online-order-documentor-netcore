@@ -56,5 +56,46 @@ namespace online_order_documentor_netcore
             }
         }
 
+        // Premier API
+
+        public static string PremierUrl
+        {
+            get
+            {
+                return Environment.GetEnvironmentVariable("PREMIER_URL");
+            }
+        }
+
+        public static string PremierPort
+        {
+            get
+            {
+                return Environment.GetEnvironmentVariable("PREMIER_PORT");
+            }
+        }
+
+        public static string PremierUsername
+        {
+            get
+            {
+                return Environment.GetEnvironmentVariable("PREMIER_USERNAME");
+            }
+        }
+
+        public static string PremierPassword
+        {
+            get
+            {
+                return Environment.GetEnvironmentVariable("PREMIER_PASSWORD");
+            }
+        }
+
+        public static string PremierIdUj
+        {
+            get
+            {
+                return Environment.GetEnvironmentVariable("PREMIER_ID_UJ");
+            }
+        }
     }
 }
