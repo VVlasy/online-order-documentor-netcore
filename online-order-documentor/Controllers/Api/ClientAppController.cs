@@ -13,6 +13,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Hosting;
+using online_order_documentor_netcore.Providers;
 
 namespace online_order_documentor_netcore.Controllers.Api
 {
@@ -22,9 +23,12 @@ namespace online_order_documentor_netcore.Controllers.Api
     {
         private IWebHostEnvironment _env;
 
-        public ClientAppController(IWebHostEnvironment env)
+        private PremierApiService _premierApiService;
+
+        public ClientAppController(IWebHostEnvironment env, PremierApiService premierApiService)
         {
             _env = env;
+            _premierApiService = premierApiService;
         }
 
         [HttpGet]
@@ -34,6 +38,13 @@ namespace online_order_documentor_netcore.Controllers.Api
             NpmPackage pkg = GetPackageJson(Path.Combine("ClientApp"));
 
             return this.Json(pkg);
+        }
+
+        [HttpGet]
+        [Route("premier")]
+        public IActionResult PremierInfo()
+        {
+            return this.Json(_premierApiService.ApiVersion);
         }
 
         private NpmPackage GetPackageJson(string directory)
