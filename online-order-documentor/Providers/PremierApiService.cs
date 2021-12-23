@@ -40,26 +40,16 @@ namespace online_order_documentor_netcore.Providers
 
         public static PremierApiVersion ApiVersion { get; set; }
 
-        private ILogger _logger;
-
-        public PremierApiService(ILogger logger)
+        public PremierApiService()
         {
-            _logger = logger;
-
             if (ApiVersion == null)
             {
-                try
-                {
-                    var task = Task.Run(() => GetApiVersion());
-                    task.Wait();
-                    PremierApiVersion version = task.Result;
+                var task = Task.Run(() => GetApiVersion());
+                task.Wait();
+                PremierApiVersion version = task.Result;
 
-                    ApiVersion = version;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to retrieve Premier API Version");
-                }
+                ApiVersion = version;
+
             }
         }
 
@@ -70,7 +60,9 @@ namespace online_order_documentor_netcore.Providers
 
             try
             {
-                HttpResponseMessage response = await _client.SendAsync(r);
+                var c = _client;
+                c.Timeout = TimeSpan.FromSeconds(1);
+                HttpResponseMessage response = await c.SendAsync(r);
 
                 if (response.IsSuccessStatusCode)
                 {
