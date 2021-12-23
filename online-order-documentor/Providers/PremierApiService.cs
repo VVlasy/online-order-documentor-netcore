@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using online_order_documentor_netcore.Models.PremierApi;
 using System;
 using System.Collections.Generic;
@@ -39,15 +40,26 @@ namespace online_order_documentor_netcore.Providers
 
         public static PremierApiVersion ApiVersion { get; set; }
 
-        public PremierApiService()
+        private ILogger _logger;
+
+        public PremierApiService(ILogger logger)
         {
+            _logger = logger;
+
             if (ApiVersion == null)
             {
-                var task = Task.Run(() => GetApiVersion());
-                task.Wait();
-                PremierApiVersion version = task.Result;
+                try
+                {
+                    var task = Task.Run(() => GetApiVersion());
+                    task.Wait();
+                    PremierApiVersion version = task.Result;
 
-                ApiVersion = version;
+                    ApiVersion = version;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to retrieve Premier API Version");
+                }
             }
         }
 
