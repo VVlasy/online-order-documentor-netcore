@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
+using System.Xml;
+using online_order_documentor_netcore.Models.Xml;
 
 namespace online_order_documentor_netcore.Controllers.Api
 {
@@ -27,66 +30,128 @@ namespace online_order_documentor_netcore.Controllers.Api
             {
                 using (StreamReader sr = new StreamReader(downloadedFile))
                 {
-                    string s = sr.ReadToEnd();
-
-                    if (filename == "mallfeed")
+                    XmlSerializer serializer = new XmlSerializer(typeof(PremierExportXmlModel));
+                    using (XmlReader reader = XmlReader.Create(sr))
                     {
-                        s = s.Replace("VFPData", "SHOP");
-                        s = s.Replace("que_txt", "SHOPITEM");
+                        var data = (PremierExportXmlModel)serializer.Deserialize(reader);
 
-                        s = s.Replace("sloupec01", "ID");
-                        s = s.Replace("sloupec02", "NAME");
-                        s = s.Replace("sloupec03", "EAN");
-                        s = s.Replace("sloupec04", "STOCK");
-                        s = s.Replace("sloupec05", "PURCHASEPRICE");
-                        s = s.Replace("sloupec06", "PRICE_NO_VAT");
-
-                        s = s.ModifyTag("PURCHASEPRICE", (s) => s.Replace(" ", string.Empty));
-                        s = s.ModifyTag("PRICE_NO_VAT", (s) => s.Replace(" ", string.Empty));
-                    }
-                    else if (filename == "czcfeed")
-                    {
-                        s = s.Replace("VFPData", "SHOP");
-                        s = s.Replace("que_txt", "SHOPITEM");
-
-                        s = s.Replace("sloupec01", "ID");
-                        s = s.Replace("sloupec02", "NAME");
-                        s = s.Replace("sloupec03", "EAN");
-                        s = s.Replace("sloupec04", "QUANTITY");
-                        s = s.Replace("sloupec05", "PRICE");
-                        s = s.Replace("sloupec06", "LIST_PRICE");
-                        s = s.Replace("sloupec07", "WEIGHT");
-                        s = s.Replace("sloupec08", "RECYCLE_FEE");
-                        s = s.Replace("sloupec09", "SIZE_Y");
-                        s = s.Replace("sloupec10", "SIZE_X");
-                        s = s.Replace("sloupec11", "SIZE_Z");
-
-                        s = s.ModifyTag("QUANTITY", (s) => s.Replace(" ", string.Empty).Replace(',', '.'));
-                        s = s.ModifyTag("PRICE", (s) => s.Replace(" ", string.Empty).Replace(',', '.'));
-                        s = s.ModifyTag("LIST_PRICE", (s) => s.Replace(" ", string.Empty).Replace(',', '.'));
-                        s = s.ModifyTag("WEIGHT", (s) => s.Replace(" ", string.Empty).Replace(',', '.'));
-                        s = s.ModifyTag("RECYCLE_FEE", (s) => s.Replace(" ", string.Empty).Replace(',', '.'));
-                        s = s.ModifyTag("SIZE_Y", (s) => s.Replace(" ", string.Empty).Replace(',', '.'));
-                        s = s.ModifyTag("SIZE_X", (s) => s.Replace(" ", string.Empty).Replace(',', '.'));
-                        s = s.ModifyTag("SIZE_Z", (s) => s.Replace(" ", string.Empty).Replace(',', '.'));
-
-                        // Add VAT
-                        s = s.ModifyTag("LIST_PRICE", (s) =>
+                        using (StringWriter xmlSw = new StringWriter())
                         {
-                            double val;
-                            if (double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out val))
+                            if (filename == "mallfeed")
                             {
-                                return (Math.Truncate((val * 1.21) * 100) / 100).ToString("0.##", CultureInfo.InvariantCulture);
+                                var mallFeedData = new MallSupplierXmlModel()
+                                {
+                                    ShopItems = new List<MallShopItem>()
+                                };
+
+                                foreach (var premierItem in data.que_txt)
+                                {
+                                    var mallShopItem = new MallShopItem()
+                                    {
+                                        ID = premierItem.Sloupec01,
+                                        Name = premierItem.Sloupec02,
+                                        EAN = premierItem.Sloupec03,
+                                        Stock = premierItem.Sloupec04,
+                                        PurchasePrice = premierItem.Sloupec05.Replace(" ", string.Empty),
+                                        PriceNoVAT = premierItem.Sloupec06.Replace(" ", string.Empty),
+
+                                        TODOSloupec07 = premierItem.Sloupec07
+                                    };
+
+                                    mallFeedData.ShopItems.Add(mallShopItem);
+                                }
+
+                                serializer = new XmlSerializer(typeof(MallSupplierXmlModel));
+                                serializer.Serialize(xmlSw, mallFeedData);
+                            }
+                            else if (filename == "czcfeed")
+                            {
+                                var czcFeedData = new CZCSupplierXmlModel()
+                                {
+                                    ShopItems = new List<CZCShopItem>()
+                                };
+
+                                foreach (var premierItem in data.que_txt)
+                                {
+                                    var czcShopItem = new CZCShopItem()
+                                    {
+                                        ID = premierItem.Sloupec01,
+                                        Name = premierItem.Sloupec02,
+                                        EAN = premierItem.Sloupec03,
+                                        Quantity = premierItem.Sloupec04.Replace(" ", string.Empty).Replace(',', '.'),
+                                        Price = premierItem.Sloupec05.Replace(" ", string.Empty).Replace(',', '.'),
+                                        ListPrice = premierItem.Sloupec06.Replace(" ", string.Empty).Replace(',', '.'),
+                                        Weight = premierItem.Sloupec07.Replace(" ", string.Empty).Replace(',', '.'),
+                                        RecycleFee = premierItem.Sloupec08.Replace(" ", string.Empty).Replace(',', '.'),
+                                        SizeY = premierItem.Sloupec09.Replace(" ", string.Empty).Replace(',', '.'),
+                                        SizeX = premierItem.Sloupec10.Replace(" ", string.Empty).Replace(',', '.'),
+                                        SizeZ = premierItem.Sloupec11.Replace(" ", string.Empty).Replace(',', '.')
+                                    };
+
+                                    double val;
+                                    if (double.TryParse(czcShopItem.ListPrice, NumberStyles.Any, CultureInfo.InvariantCulture, out val))
+                                    {
+                                        czcShopItem.ListPrice = (Math.Truncate((val * 1.21) * 100) / 100).ToString("0.##", CultureInfo.InvariantCulture);
+                                    }
+                                    else
+                                    {
+                                        czcShopItem.ListPrice = null;
+                                    }
+
+                                    czcFeedData.ShopItems.Add(czcShopItem);
+                                }
+
+                                serializer = new XmlSerializer(typeof(CZCSupplierXmlModel));
+                                serializer.Serialize(xmlSw, czcFeedData);
+
+                            }
+                            else if (filename == "alzafeed")
+                            {
+                                var alzaFeedData = new AlzaSupplierXmlModel()
+                                {
+                                    Items = new List<AlzaItem>()
+                                };
+
+                                foreach (var premierItem in data.que_txt)
+                                {
+                                    var alzaItem = new AlzaItem()
+                                    {
+                                        Pricing = new AlzaItemPricing()
+                                        {
+                                            PriceWithFee = premierItem.Sloupec08.Replace(" ", string.Empty).Replace(',', '.'),
+                                            PriceWithoutFee = premierItem.Sloupec08.Replace(" ", string.Empty).Replace(',', '.'),
+                                            RecycleFee = premierItem.Sloupec09.Replace(" ", string.Empty).Replace(',', '.'),
+                                            //CopyrightFee = 0.ToString(),
+                                            Currency = "CZK"
+                                        },
+                                        Storage = new AlzaItemStorage()
+                                        {
+                                            StoredQuantity = premierItem.Sloupec11
+                                        },
+                                        Product = new AlzaItemProduct()
+                                        {
+                                            Name = premierItem.Sloupec02,
+                                            DealerCode = premierItem.Sloupec01,
+                                            PartNumber = premierItem.Sloupec03,
+                                            Ean = premierItem.Sloupec05
+                                        }
+                                    };
+
+                                    alzaFeedData.Items.Add(alzaItem);
+                                }
+
+                                serializer = new XmlSerializer(typeof(AlzaSupplierXmlModel));
+                                serializer.Serialize(xmlSw, alzaFeedData);
                             }
 
-                            return null;
-                        });
+
+                            return this.Xml(xmlSw.ToString());
+                        }
                     }
-
-
-                    return this.Xml(s);
                 }
             }
         }
+
+
     }
 }
