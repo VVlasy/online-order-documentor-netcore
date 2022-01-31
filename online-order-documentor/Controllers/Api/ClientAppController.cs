@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Hosting;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Hosting;
 using online_order_documentor_netcore.Providers;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace online_order_documentor_netcore.Controllers.Api
 {
@@ -46,6 +48,23 @@ namespace online_order_documentor_netcore.Controllers.Api
         {
             return this.Json(PremierApiService.ApiVersion);
         }
+
+        private class PublicIpObject
+        {
+            public string Ip { get; set; }
+        }
+
+        [HttpGet]
+        [Route("publicIp")]
+        public async Task<IActionResult> PublicIp()
+        {
+            HttpResponseMessage IpData = await new HttpClient().GetAsync("https://api.ipify.org?format=json");
+
+            PublicIpObject ipObj = JsonConvert.DeserializeObject<PublicIpObject>(await IpData.Content.ReadAsStringAsync());
+
+            return this.Json(ipObj);
+        }
+
 
         private NpmPackage GetPackageJson(string directory)
         {
