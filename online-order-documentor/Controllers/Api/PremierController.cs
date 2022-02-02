@@ -121,12 +121,12 @@ namespace online_order_documentor_netcore.Controllers.Api
                                             PriceWithFee = premierItem.Sloupec08.Replace(" ", string.Empty).Replace(',', '.'),
                                             PriceWithoutFee = premierItem.Sloupec08.Replace(" ", string.Empty).Replace(',', '.'),
                                             RecycleFee = premierItem.Sloupec09.Replace(" ", string.Empty).Replace(',', '.'),
-                                            //CopyrightFee = 0.ToString(),
+                                            CopyrightFee = string.Empty, //0.ToString(),
                                             Currency = "CZK"
                                         },
                                         Storage = new AlzaItemStorage()
                                         {
-                                            StoredQuantity = premierItem.Sloupec11
+                                            StoredQuantity = premierItem.Sloupec11.Replace(" ", string.Empty).Replace(',', '.').Replace(".00", string.Empty)
                                         },
                                         Product = new AlzaItemProduct()
                                         {
@@ -136,6 +136,11 @@ namespace online_order_documentor_netcore.Controllers.Api
                                             Ean = premierItem.Sloupec05
                                         }
                                     };
+
+                                    if (alzaItem.Pricing.PriceWithFee == "0.00" || alzaItem.Pricing.PriceWithoutFee == "0.00")
+                                    {
+                                        continue;
+                                    }
 
                                     alzaFeedData.Items.Add(alzaItem);
                                 }
