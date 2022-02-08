@@ -11,6 +11,7 @@ using System.Text;
 using System.Xml.Serialization;
 using System.Xml;
 using online_order_documentor_netcore.Models.Xml;
+using online_order_documentor_netcore.Providers;
 
 namespace online_order_documentor_netcore.Controllers.Api
 {
@@ -24,8 +25,10 @@ namespace online_order_documentor_netcore.Controllers.Api
         {
             // TODO: return feed from premier feeds folder in ftp
             Providers.IStorageProvider storage = Providers.StorageProviderFactory.Create(true);
+            AssignColumnsToProviderBasedOnFile(storage as SplitFilesFtpProvider, filename);
 
             string file = $"homes/sklad premier/Public feed/{filename}.xml";
+
             using (var downloadedFile = storage.Download(file))
             {
                 using (StreamReader sr = new StreamReader(downloadedFile))
@@ -137,11 +140,6 @@ namespace online_order_documentor_netcore.Controllers.Api
                                         }
                                     };
 
-                                    if (alzaItem.Product.DealerCode == "FTINTIMINI52")
-                                    {
-
-                                    }
-
                                     if (alzaItem.Pricing.PriceWithFee == "0.00" || alzaItem.Pricing.PriceWithoutFee == "0.00")
                                     {
                                         continue;
@@ -162,6 +160,21 @@ namespace online_order_documentor_netcore.Controllers.Api
             }
         }
 
+        private void AssignColumnsToProviderBasedOnFile(SplitFilesFtpProvider provider, string filename)
+        {
+            if (provider == null)
+            {
+                return;
+            }
 
+            switch (filename)
+            {
+                case "alzafeed":
+                    provider.StockColumnName = "sloupec11";
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }
