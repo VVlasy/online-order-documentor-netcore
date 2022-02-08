@@ -1,4 +1,5 @@
-﻿using System;
+﻿using online_order_documentor_netcore.Models.Xml;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -6,11 +7,16 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace online_order_documentor_netcore.Providers
 {
     public class SplitFilesFtpProvider : FtpProvider
     {
+        public string ItemIdColumnName { get; set; } = "sloupec01";
+
+        public string StockColumnName { get; set; } = "sloupec04";
+
         public override Stream Download(string name)
         {
             if (!name.EndsWith(".xml"))
@@ -35,80 +41,51 @@ namespace online_order_documentor_netcore.Providers
                 return base.Download(name);
             }
 
-            XmlDocument resultXml = new XmlDocument();
-
-            foreach (string filename in files)
+            XmlSerializer serializer = new XmlSerializer(typeof(PremierExportXmlModel));
+            PremierExportXmlModel resultPremierFeed = new PremierExportXmlModel()
             {
-                XmlDocument srcFile = new XmlDocument();
-                using (var str = base.Download($"{folderOfFile}/{filename}"))
+                que_txt = new List<que_txt>()
+            };
+
+            foreach (string filename in files.OrderBy(x=>x.Length))
+            {
+                using (var downloadedFile = base.Download($"{folderOfFile}/{filename}"))
                 {
-                    srcFile.Load(str);
-
-                    // Detect feed type: (Premier should be the only one)
-
-                    switch (srcFile.LastChild.Name) // TODO: check we are still the same type of xml, if not, throw err
+                    using (StreamReader sr = new StreamReader(downloadedFile))
                     {
-                        case "VFPData":
-                            if (resultXml.ChildNodes.Count == 0) // first time we are filling the result xml
+                        using (XmlReader reader = XmlReader.Create(sr))
+                        {
+                            var data = (PremierExportXmlModel)serializer.Deserialize(reader);
+
+                            foreach (que_txt item in data.que_txt)
                             {
-                                resultXml.AppendChild(resultXml.ImportNode(srcFile.FirstChild, true));
-                                var vfpDataNode = resultXml.CreateNode(XmlNodeType.Element, "VFPData", string.Empty);
-                                resultXml.AppendChild(vfpDataNode);
-                            }
+                                que_txt existingItem = resultPremierFeed.que_txt.FirstOrDefault(x => x[ItemIdColumnName] == item[ItemIdColumnName]);
+                                int stockAmount = item.GetColumnAsInt(StockColumnName);
+                                item[StockColumnName] = stockAmount.ToString(CultureInfo.InvariantCulture);
 
-                            foreach (XmlNode childNode in srcFile.LastChild.ChildNodes.Cast<XmlNode>())
-                            {
-                                string id = childNode.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec01").InnerText;
-                                int stockAmount = -1;
-
-                                try
+                                if (existingItem != null)
                                 {
-                                    stockAmount = (int)double.Parse(childNode.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec04").InnerText.Replace(",", ".").Replace(" ", string.Empty), CultureInfo.InvariantCulture);
-                                }
-                                catch (Exception ex)
-                                {
-                                    // Console.WriteLine(ex.Message);
-                                }
-
-                                // check if we already have a node with this id
-                                if (resultXml.LastChild.ChildNodes.Cast<XmlNode>().Any(x => x.ChildNodes.Cast<XmlNode>().Any(y => y.Name == "sloupec01" && y.InnerText == id)))
-                                {
-                                    XmlNode resultFoundNode = resultXml.LastChild.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.ChildNodes.Cast<XmlNode>().Any(y => y.Name == "sloupec01" && y.InnerText == id));
-                                    XmlNode resultstockAmountNode = resultFoundNode.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "sloupec04");
-
-                                    int stockAmountResult = -1;
-
-                                    try
-                                    {
-                                        stockAmountResult = (int)double.Parse(resultstockAmountNode.InnerText.Replace(",", ".").Replace(" ", string.Empty), CultureInfo.InvariantCulture);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        // Console.WriteLine(ex.Message);
-                                    }
-
-                                    resultstockAmountNode.InnerText = $"{stockAmount + stockAmountResult},00";
+                                    existingItem[StockColumnName] = (existingItem.GetColumnAsInt(StockColumnName) + stockAmount).ToString(CultureInfo.InvariantCulture);
+                                    resultPremierFeed.que_txt.Add(existingItem);
                                 }
                                 else
-                                {
-                                    XmlNode newQueTxtNode = resultXml.CreateNode(XmlNodeType.Element, "que_txt", string.Empty);
-                                    newQueTxtNode.InnerXml = childNode.InnerXml;
-
-                                    resultXml.LastChild.AppendChild(newQueTxtNode);
+                                {   
+                                    resultPremierFeed.que_txt.Add(item);
                                 }
                             }
-
-                            break;
-                        default:
-                            break;
+                        }
                     }
                 }
             }
 
             MemoryStream resultStream = new MemoryStream();
-            resultXml.Save(resultStream);
-            resultStream.Position = 0;
+            using (XmlWriter writer = XmlWriter.Create(resultStream))
+            {
+                serializer.Serialize(writer, resultPremierFeed);
+            }
 
+            resultStream.Position = 0;
+            
             return resultStream;
         }
     }

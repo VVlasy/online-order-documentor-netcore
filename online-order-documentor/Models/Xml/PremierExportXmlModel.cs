@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -42,6 +43,36 @@ namespace online_order_documentor_netcore.Models.Xml
 
         [XmlElement(ElementName = "sloupec11")]
         public string Sloupec11 { get; set; }
+
+        public string this[string columnName]
+        {
+            get
+            {
+                PropertyInfo info = GetType().GetProperty(columnName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+
+                if (info == null)
+                    return null;
+
+                return info.GetValue(this, null).ToString();
+            }
+            set
+            {
+                PropertyInfo info = GetType().GetProperty(columnName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+
+                if (info != null)
+                    info.SetValue(this, value, null);
+            }
+        }
+
+        public int GetColumnAsInt(string columnName)
+        {
+            if (double.TryParse(this[columnName], out double doubleValue))
+            {
+                return (int)doubleValue;
+            }
+
+            return 0;
+        }
     }
 
     [XmlRoot(ElementName = "VFPData")]
