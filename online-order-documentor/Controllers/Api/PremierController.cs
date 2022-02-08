@@ -137,6 +137,11 @@ namespace online_order_documentor_netcore.Controllers.Api
                                         }
                                     };
 
+                                    if (alzaItem.Product.DealerCode == "FTINTIMINI52")
+                                    {
+
+                                    }
+
                                     if (alzaItem.Pricing.PriceWithFee == "0.00" || alzaItem.Pricing.PriceWithoutFee == "0.00")
                                     {
                                         continue;
