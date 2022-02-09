@@ -47,6 +47,8 @@ namespace online_order_documentor_netcore.Controllers.Api
                     return AvailabilityFeed(brands, eans);
                 case "availability-shoptet.xml":
                     return ShoptetAvailabilityFeed(brands, eans);
+                case "availability-heureka.xml":
+                    return HeurekaAvailabilityFeed(brands, eans);
                 default:
                     return base.BadRequest("Invalid Path");
             }
@@ -76,6 +78,16 @@ namespace online_order_documentor_netcore.Controllers.Api
             var feed = Tools.StripByBrandsAndEans(Tools.GetRawXmlFeed(url), brands, eans);
 
             feed = Tools.CreateAvailabilityFeedShoptet(feed);
+
+            return this.Xml(feed.OuterXml);
+        }
+
+        private IActionResult HeurekaAvailabilityFeed(List<string> brands, List<string> eans)
+        {
+            var url = string.Format("https://www.instaxshop.cz/universal.xml?hash={0}", AppVariables.InstaxShopHash);
+            var feed = Tools.StripByBrandsAndEans(Tools.GetRawXmlFeed(url), brands, eans);
+
+            feed = Tools.CreateAvailabilityFeedHeureka(feed);
 
             return this.Xml(feed.OuterXml);
         }
