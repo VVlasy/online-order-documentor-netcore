@@ -64,6 +64,10 @@ namespace online_order_documentor_netcore.Controllers.Api
                     key = $"availability-shoptet.xml&{string.Join(";", brands)}&{string.Join(";", eans)}";
                     _cache.Register(key, () => ShoptetAvailabilityFeed(brands, eans));
                     return await _cache.Get(key) as IActionResult;
+                case "availability-heureka.xml":
+                    key = $"availability-heureka.xml&{string.Join(";", brands)}&{string.Join(";", eans)}";
+                    _cache.Register(key, () => HeurekaAvailabilityFeed(brands, eans));
+                    return await _cache.Get(key) as IActionResult;
                 default:
                     return base.BadRequest("Invalid Path");
             }
@@ -97,6 +101,20 @@ namespace online_order_documentor_netcore.Controllers.Api
             List<string> eansToRemove = levenhukEans.ToList();
 
             feed = Tools.CreateAvailabilityFeedShoptet(feed, eansToRemove);
+
+            return this.Xml(feed.OuterXml);
+        }
+
+        private IActionResult HeurekaAvailabilityFeed(List<string> brands, List<string> eans)
+        {
+            var url = string.Format("https://www.digi-eshop.cz/universal.xml?hash={0}", AppVariables.DigiEshopHash);
+            var feed = Tools.StripByBrandsAndEans(Tools.GetRawXmlFeed(url), brands, eans);
+
+            IEnumerable<string> levenhukEans = LevenhukController.GetData().ZBOZI.POLOZKA.Select(x => x.EAN);
+
+            List<string> eansToRemove = levenhukEans.ToList();
+
+            feed = Tools.CreateAvailabilityFeedHeureka(feed, eansToRemove);
 
             return this.Xml(feed.OuterXml);
         }
