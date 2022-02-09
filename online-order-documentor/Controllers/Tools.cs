@@ -143,6 +143,45 @@ namespace online_order_documentor_netcore.Controllers
             return availabilityFeed;
         }
 
+        public static XmlDocument CreateAvailabilityFeedHeureka(XmlDocument sourceFeed, List<string> eansToIgnore = null)
+        {
+            var stockData = GetStockData();
+
+            XmlDocument availabilityFeed = new XmlDocument();
+            XmlNode heaurekaFeedItems = availabilityFeed.CreateNode(XmlNodeType.Element, "item_list", string.Empty);
+
+            foreach (XmlNode polozka in sourceFeed.Cast<XmlNode>().FirstOrDefault(x => x.Name == "SHOP").ChildNodes)
+            {
+                var newNode = availabilityFeed.CreateNode(XmlNodeType.Element, "item", string.Empty);
+
+                var ean = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "EAN").InnerText.PadLeft(13, '0');
+                var id = polozka.ChildNodes.Cast<XmlNode>().FirstOrDefault(x => x.Name == "ITEM_ID").InnerText;
+
+                if (!string.IsNullOrEmpty(ean) && stockData.ContainsKey(ean))
+                {
+                    var itemIdAttribute = availabilityFeed.CreateAttribute("item_id");
+
+                    var stockQuantityNode = availabilityFeed.CreateNode(XmlNodeType.Element, "stock_quantity", string.Empty);
+
+                    itemIdAttribute.InnerText = id;
+                    stockQuantityNode.InnerText = stockData[ean].ToString();
+
+                    newNode.Attributes.Append(itemIdAttribute);
+                    newNode.AppendChild(stockQuantityNode);
+
+                    if (eansToIgnore == null || !eansToIgnore.Contains(ean))
+                    {
+                        heaurekaFeedItems.AppendChild(newNode);
+                    }
+                }
+            }
+
+            availabilityFeed.AppendChild(heaurekaFeedItems);
+
+            return availabilityFeed;
+        }
+
+
         public static Dictionary<string, int> GetStockData()
         {
             XmlDocument availabilityFeed = new XmlDocument();
