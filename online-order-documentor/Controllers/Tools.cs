@@ -13,11 +13,14 @@ namespace online_order_documentor_netcore.Controllers
     {
         public static ContentResult Xml(this Controller ctrl, string content)
         {
+            // Disable cloudflare compression for XML feeds to support Heureka feed validation
+            ctrl.HttpContext.Response.Headers.Add("cache-control", "no-transform");
+
             return new ContentResult
             {
                 ContentType = "application/xml",
                 Content = content,
-                StatusCode = 200
+                StatusCode = 200,
             };
         }
 
@@ -127,6 +130,11 @@ namespace online_order_documentor_netcore.Controllers
 
                     amountNode.InnerText = stockData[ean].ToString();
 
+                    if (ean == "4046628844363")
+                    {
+
+                    }
+
                     stockNode.AppendChild(amountNode);
                     newNode.AppendChild(codeNode);
                     newNode.AppendChild(stockNode);
@@ -203,6 +211,11 @@ namespace online_order_documentor_netcore.Controllers
                 int amount;
                 if (!string.IsNullOrEmpty(key) && !stockData.ContainsKey(key) && int.TryParse(stringAmount, out amount))
                 {
+                    if (key == "4046628844363")
+                    {
+
+                    }
+
                     if (amount < 0)
                     {  // prevent stock amount to go below 0, fix for accounting system deficiencies
                         var infoText = $"Normalized stock amount: [{key}]: {amount} -> 0";
