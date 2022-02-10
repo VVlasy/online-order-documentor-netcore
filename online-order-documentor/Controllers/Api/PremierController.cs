@@ -37,8 +37,7 @@ namespace online_order_documentor_netcore.Controllers.Api
                     using (XmlReader reader = XmlReader.Create(sr))
                     {
                         var data = (PremierExportXmlModel)serializer.Deserialize(reader);
-
-                        using (StringWriter xmlSw = new StringWriter())
+                        using (Utf8StringWriter xmlSw = new Utf8StringWriter())
                         {
                             if (filename == "mallfeed")
                             {
@@ -151,7 +150,6 @@ namespace online_order_documentor_netcore.Controllers.Api
                                 serializer = new XmlSerializer(typeof(AlzaSupplierXmlModel));
                                 serializer.Serialize(xmlSw, alzaFeedData);
                             }
-
 
                             return this.Xml(xmlSw.ToString());
                         }
