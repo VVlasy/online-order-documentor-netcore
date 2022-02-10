@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -66,7 +67,7 @@ namespace online_order_documentor_netcore.Models.Xml
 
         public int GetColumnAsInt(string columnName)
         {
-            if (double.TryParse(this[columnName], out double doubleValue))
+            if (double.TryParse(this[columnName].Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture,out double doubleValue))
             {
                 return (int)doubleValue;
             }
