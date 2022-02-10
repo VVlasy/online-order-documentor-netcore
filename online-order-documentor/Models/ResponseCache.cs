@@ -70,6 +70,8 @@ namespace online_order_documentor_netcore.Models
             {
                 if (_cacheItems[item.Key].Expired() && !_cacheItems[item.Key].Refreshing)
                 {
+                    _cacheItems[item.Key].Refreshing = true;
+
                     Task.Factory.StartNew(() =>
                     {
                         _cacheItems[item.Key].Data = item.Value();
