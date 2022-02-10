@@ -49,49 +49,56 @@ namespace online_order_documentor_netcore.Controllers.Api
                 }
             }
 
+            object result;
             string key;
             switch (destination)
             {
                 case "data.xml":
                     key = $"data.xml&{string.Join(";", brands)}&{string.Join(";", eans)}";
                     _cache.Register(key, () => DataFeed(brands, eans));
-                    return await _cache.Get(key) as IActionResult;
+                    result = await _cache.Get(key);
+                    break;
                 case "availability.xml":
                     key = $"availability.xml&{string.Join(";", brands)}&{string.Join(";", eans)}";
                     _cache.Register(key, () => AvailabilityFeed(brands, eans));
-                    return await _cache.Get(key) as IActionResult;
+                    result = await _cache.Get(key);
+                    break;
                 case "availability-shoptet.xml":
                     key = $"availability-shoptet.xml&{string.Join(";", brands)}&{string.Join(";", eans)}";
                     _cache.Register(key, () => ShoptetAvailabilityFeed(brands, eans));
-                    return await _cache.Get(key) as IActionResult;
+                    result = await _cache.Get(key);
+                    break;
                 case "availability-heureka.xml":
                     key = $"availability-heureka.xml&{string.Join(";", brands)}&{string.Join(";", eans)}";
                     _cache.Register(key, () => HeurekaAvailabilityFeed(brands, eans));
-                    return await _cache.Get(key) as IActionResult;
+                    result = await _cache.Get(key);
+                    break;
                 default:
                     return base.BadRequest("Invalid Path");
             }
+
+            return this.Xml(result.ToString());
         }
 
-        private IActionResult DataFeed(List<string> brands, List<string> eans)
+        private string DataFeed(List<string> brands, List<string> eans)
         {
             var url = string.Format("https://www.digi-eshop.cz/universal.xml?hash={0}", AppVariables.DigiEshopHash);
             var feed = Tools.StripByBrandsAndEans(Tools.GetRawXmlFeed(url), brands, eans);
 
-            return this.Xml(feed.OuterXml);
+            return feed.OuterXml;
         }
 
-        private IActionResult AvailabilityFeed(List<string> brands, List<string> eans)
+        private string AvailabilityFeed(List<string> brands, List<string> eans)
         {
             var url = string.Format("https://www.digi-eshop.cz/universal.xml?hash={0}", AppVariables.DigiEshopHash);
             var feed = Tools.StripByBrandsAndEans(Tools.GetRawXmlFeed(url), brands, eans);
 
             feed = Tools.CreateAvailabilityFeed(feed);
 
-            return this.Xml(feed.OuterXml);
+            return feed.OuterXml;
         }
 
-        private IActionResult ShoptetAvailabilityFeed(List<string> brands, List<string> eans)
+        private string ShoptetAvailabilityFeed(List<string> brands, List<string> eans)
         {
             var url = string.Format("https://www.digi-eshop.cz/universal.xml?hash={0}", AppVariables.DigiEshopHash);
             var feed = Tools.StripByBrandsAndEans(Tools.GetRawXmlFeed(url), brands, eans);
@@ -102,10 +109,10 @@ namespace online_order_documentor_netcore.Controllers.Api
 
             feed = Tools.CreateAvailabilityFeedShoptet(feed, eansToRemove);
 
-            return this.Xml(feed.OuterXml);
+            return feed.OuterXml;
         }
 
-        private IActionResult HeurekaAvailabilityFeed(List<string> brands, List<string> eans)
+        private string HeurekaAvailabilityFeed(List<string> brands, List<string> eans)
         {
             var url = string.Format("https://www.digi-eshop.cz/universal.xml?hash={0}", AppVariables.DigiEshopHash);
             var feed = Tools.StripByBrandsAndEans(Tools.GetRawXmlFeed(url), brands, eans);
@@ -116,7 +123,7 @@ namespace online_order_documentor_netcore.Controllers.Api
 
             feed = Tools.CreateAvailabilityFeedHeureka(feed, eansToRemove);
 
-            return this.Xml(feed.OuterXml);
+            return feed.OuterXml;
         }
     }
 }
