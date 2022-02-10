@@ -13,8 +13,6 @@ namespace online_order_documentor_netcore.Controllers
     {
         public static ContentResult Xml(this Controller ctrl, string content)
         {
-            ctrl.HttpContext.Response.ContentLength = content.Length;
-
             // Disable cloudflare compression for XML feeds to support Heureka feed validation
             ctrl.HttpContext.Response.Headers.Add("cache-control", "no-transform");
 
