@@ -71,7 +71,6 @@ namespace online_order_documentor_netcore.Controllers.Api
             PhysicalFileProvider provider = new PhysicalFileProvider(Path.Combine(_env.ContentRootPath, directory)); ;
 
             var pkg = provider.GetFileInfo("package.json");
-
             var serializer = new JsonSerializer();
 
             using (var sr = new StreamReader(pkg.CreateReadStream()))
