@@ -20,6 +20,8 @@ namespace online_order_documentor_netcore.Controllers.Api
             {"ZASOBA", "AMOUNT" },
             {"POPIS", "DESCRIPTION" },
             {"HMOTNOST", "WEIGHT" },
+            {"EAN","EAN"},
+            {"KRATKY_", "SHORT_DESCRIPTION" }
         };
 
         [HttpGet]
