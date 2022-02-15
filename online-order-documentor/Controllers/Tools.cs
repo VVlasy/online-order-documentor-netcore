@@ -164,7 +164,7 @@ namespace online_order_documentor_netcore.Controllers
 
                 if (!string.IsNullOrEmpty(ean) && stockData.ContainsKey(ean))
                 {
-                    var itemIdAttribute = availabilityFeed.CreateAttribute("item_id");
+                    var itemIdAttribute = availabilityFeed.CreateAttribute("id");
 
                     var stockQuantityNode = availabilityFeed.CreateNode(XmlNodeType.Element, "stock_quantity", string.Empty);
 
