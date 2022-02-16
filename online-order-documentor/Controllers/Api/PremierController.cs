@@ -150,7 +150,31 @@ namespace online_order_documentor_netcore.Controllers.Api
                                 serializer = new XmlSerializer(typeof(AlzaSupplierXmlModel));
                                 serializer.Serialize(xmlSw, alzaFeedData);
                             }
+                            else if (filename == "expando")
+                            {
+                                var expandoFeedData = new ExpandoXmlModel()
+                                {
+                                    Products = new List<ExpandoItem>()
+                                };
 
+                                foreach (var premierItem in data.que_txt)
+                                {
+                                    var expandoItem = new ExpandoItem()
+                                    {
+                                        Code = premierItem.Sloupec01,
+                                        Name = premierItem.Sloupec02,
+                                        Stock = premierItem.Sloupec03.Replace(".00", string.Empty).Replace(",00", string.Empty),
+                                        EAN = premierItem.Sloupec04,
+                                        PriceVat = premierItem.Sloupec05,
+                                    };
+
+                                    expandoFeedData.Products.Add(expandoItem);
+                                }
+
+                                serializer = new XmlSerializer(typeof(ExpandoXmlModel));
+                                serializer.Serialize(xmlSw, expandoFeedData);
+
+                            }
                             return this.Xml(xmlSw.ToString());
                         }
                     }
@@ -169,6 +193,9 @@ namespace online_order_documentor_netcore.Controllers.Api
             {
                 case "alzafeed":
                     provider.StockColumnName = "sloupec11";
+                    break;
+                case "expando":
+                    provider.StockColumnName = "sloupec03";
                     break;
                 default:
                     break;
