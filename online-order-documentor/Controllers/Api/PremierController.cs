@@ -163,12 +163,16 @@ namespace online_order_documentor_netcore.Controllers.Api
                                     {
                                         Code = premierItem.Sloupec01,
                                         Name = premierItem.Sloupec02,
-                                        Stock = premierItem.Sloupec03.Replace(".00", string.Empty).Replace(",00", string.Empty),
-                                        EAN = premierItem.Sloupec04,
-                                        PriceVat = premierItem.Sloupec05,
+                                        Stock = premierItem.Sloupec11.Replace(".00", string.Empty).Replace(",00", string.Empty),
+                                        EAN = premierItem.Sloupec05,
+                                        PriceVat = premierItem.Sloupec08,
                                     };
 
-                                    expandoFeedData.Products.Add(expandoItem);
+
+                                    if (int.TryParse(expandoItem.Stock, NumberStyles.Any, CultureInfo.InvariantCulture, out int stockAmount) && stockAmount > 0)
+                                    {
+                                        expandoFeedData.Products.Add(expandoItem);
+                                    }
                                 }
 
                                 serializer = new XmlSerializer(typeof(ExpandoXmlModel));
@@ -195,7 +199,7 @@ namespace online_order_documentor_netcore.Controllers.Api
                     provider.StockColumnName = "sloupec11";
                     break;
                 case "expando":
-                    provider.StockColumnName = "sloupec03";
+                    provider.StockColumnName = "sloupec11";
                     break;
                 default:
                     break;
