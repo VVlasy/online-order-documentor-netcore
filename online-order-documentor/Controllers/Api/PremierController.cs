@@ -169,7 +169,7 @@ namespace online_order_documentor_netcore.Controllers.Api
                                     };
 
 
-                                    if (int.TryParse(expandoItem.Stock, NumberStyles.Any, CultureInfo.InvariantCulture, out int stockAmount) && stockAmount > 0)
+                                    if (double.TryParse(expandoItem.PriceVat.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double itemPrice) && itemPrice > 0)
                                     {
                                         expandoFeedData.Products.Add(expandoItem);
                                     }
