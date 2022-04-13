@@ -212,6 +212,7 @@ namespace online_order_documentor_netcore.Controllers.Api
                     DESCRIPTION = entry.Description.ToString(),
                     EAN = entry.Ean,
                     WEIGHT = entry.Weight.Replace(',', '.'),
+                    MANUFACTURER = entry.Brand,
                     AVAILABILITYOUTOFSTOCK = "Vyprodáno",
                     AVAILABILITYINSTOCK = "Skladem",
                     INFORMATIONPARAMETERS = new INFORMATIONPARAMETERS()
@@ -267,9 +268,6 @@ namespace online_order_documentor_netcore.Controllers.Api
         {
             string url = "https://cdn.t1.levenhuk.com/media/feed/znj_cz_leven_bress_meade_wsp1-2-3.xml";
             var feed = Tools.GetRawXmlFeed(url);
-
-            // test 
-            feed = new XmlDocument();
 
             XmlSerializer serializer = new XmlSerializer(typeof(LevenhukNewXmlModel));
             using (XmlReader reader = new XmlNodeReader(feed))
