@@ -254,7 +254,8 @@ namespace online_order_documentor_netcore.Controllers.Api
                 }
                 else
                 {
-                    newShopItem.PRICE = entry.RetailPrice.Replace(',', '.').Split(' ').FirstOrDefault();
+                    newShopItem.PRICEVAT = entry.RetailPrice.Replace(',', '.').Split(' ').FirstOrDefault();
+                    newShopItem.STANDARDPRICE = entry.RetailPrice.Replace(',', '.').Split(' ').FirstOrDefault();
                 }
 
                 shoptetFeed.SHOPITEM.Add(newShopItem);
