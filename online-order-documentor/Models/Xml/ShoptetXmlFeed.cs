@@ -60,13 +60,13 @@ namespace online_order_documentor_netcore.Models.Xml
 
         [XmlElement(ElementName = "PRICE_VAT")]
         public string PRICEVAT { get; set; }
-        [XmlElement(ElementName = "MANUFACTURER")]
-        public string MANUFACTURER { get; set; }
-
         [XmlElement(ElementName = "PURCHASE_PRICE")]
         public string PURCHASEPRICE { get; set; }
-
-        [XmlElement(ElementName = "DESCRIPTION")]
+        [XmlElement(ElementName = "STANDARD_PRICE")]
+        public string STANDARDPRICE { get; set; }
+        [XmlElement(ElementName = "MANUFACTURER")]
+        public string MANUFACTURER { get; set; } 
+[XmlElement(ElementName = "DESCRIPTION")]
         public string DESCRIPTION { get; set; }
         [XmlElement(ElementName = "SHORT_DESCRIPTION")]
         public string SHORTDESCRIPTION { get; set; }
