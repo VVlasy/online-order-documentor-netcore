@@ -103,7 +103,7 @@ namespace online_order_documentor_netcore.Controllers.Api
             var url = string.Format("https://www.digi-eshop.cz/universal.xml?hash={0}", AppVariables.DigiEshopHash);
             var feed = Tools.StripByBrandsAndEans(Tools.GetRawXmlFeed(url), brands, eans);
 
-            IEnumerable<string> levenhukEans = LevenhukController.GetData().ZBOZI.POLOZKA.Select(x=>x.EAN);
+            IEnumerable<string> levenhukEans = LevenhukController.GetData().Entry.Select(x=>x.Ean);
 
             List<string> eansToRemove = levenhukEans.ToList();
 
@@ -117,7 +117,7 @@ namespace online_order_documentor_netcore.Controllers.Api
             var url = string.Format("https://www.digi-eshop.cz/universal.xml?hash={0}", AppVariables.DigiEshopHash);
             var feed = Tools.StripByBrandsAndEans(Tools.GetRawXmlFeed(url), brands, eans);
 
-            IEnumerable<string> levenhukEans = LevenhukController.GetData().ZBOZI.POLOZKA.Select(x => x.EAN);
+            IEnumerable<string> levenhukEans = LevenhukController.GetData().Entry.Select(x => x.Ean);
 
             List<string> eansToRemove = levenhukEans.ToList();
 
