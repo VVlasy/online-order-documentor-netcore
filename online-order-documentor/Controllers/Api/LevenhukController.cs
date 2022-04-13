@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using online_order_documentor_netcore.Models.Xml;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -14,21 +16,15 @@ namespace online_order_documentor_netcore.Controllers.Api
     {
         public static Dictionary<string, string> NodeConversions = new Dictionary<string, string>()
         {
-            {"KOD", "CODE" },
-            {"NAZEV", "NAME" },
             {"OBRAZEK", "IMAGE" },
-            {"ZASOBA", "AMOUNT" },
-            {"POPIS", "DESCRIPTION" },
-            {"HMOTNOST", "WEIGHT" },
-            {"EAN","EAN"},
-            {"KRATKY_", "SHORT_DESCRIPTION" }
+            {"ZASOBA", "AMOUNT" }
         };
 
         [HttpGet]
         [Route("feed.xml")]
         public IActionResult RawFeed()
         {
-            string url = "http://www.levenhukshop.cz/seznam-zbozi.aspx";
+            string url = "https://cdn.t1.levenhuk.com/media/feed/znj_cz_leven_bress_meade_wsp1-2-3.xml";
             var feed = Tools.GetRawXmlFeed(url);
             return this.Xml(feed.OuterXml);
         }
@@ -39,19 +35,31 @@ namespace online_order_documentor_netcore.Controllers.Api
         {
             var shoptetFeed = GetShoptetFeed();
 
-            return this.Xml(shoptetFeed.OuterXml);
+            XmlSerializer serializer = new XmlSerializer(typeof(ShoptetXmlFeed));
+            using (Utf8StringWriter xmlSw = new Utf8StringWriter())
+            {
+                serializer.Serialize(xmlSw, shoptetFeed);
+
+                return this.Xml(xmlSw.ToString());
+            }
         }
 
         [HttpGet]
         [Route("feed-raised.xml")]
         public IActionResult RaisedFeed()
         {
-            XmlDocument shoptetFeed = GetShoptetFeed(1.016);
+            var shoptetFeed = GetShoptetFeed(true);
 
-            return this.Xml(shoptetFeed.OuterXml);
+            XmlSerializer serializer = new XmlSerializer(typeof(ShoptetXmlFeed));
+            using (Utf8StringWriter xmlSw = new Utf8StringWriter())
+            {
+                serializer.Serialize(xmlSw, shoptetFeed);
+
+                return this.Xml(xmlSw.ToString());
+            }
         }
 
-        public static XmlDocument GetShoptetFeed(double priceRaise = 1)
+        public static XmlDocument GetShoptetXmlDocumentFeed(double priceRaise = 1)
         {
             string url = "http://www.levenhukshop.cz/seznam-zbozi.aspx";
             var feed = Tools.GetRawXmlFeed(url);
@@ -187,16 +195,84 @@ namespace online_order_documentor_netcore.Controllers.Api
         }
 
         // New stuff
-
-        public static LevenhukXmlModel GetData(double priceRaise = 1)
+        public static ShoptetXmlFeed GetShoptetFeed(bool exportFeed = false)
         {
-            string url = "http://www.levenhukshop.cz/seznam-zbozi.aspx";
+            double priceRaise = 1.016;
+            var sourceFeed = GetData();
+
+            ShoptetXmlFeed shoptetFeed = new ShoptetXmlFeed() { SHOPITEM = new List<SHOPITEM>() };
+
+            foreach (Entry entry in sourceFeed.Entry)
+            {
+                var newShopItem = new SHOPITEM()
+                // Copy some normal values
+                {
+                    CODE = entry.Article,
+                    NAME = entry.ProductTitle,
+                    DESCRIPTION = entry.Description.ToString(),
+                    EAN = entry.Ean,
+                    WEIGHT = entry.Weight.Replace(',', '.'),
+                    MANUFACTURER = entry.Brand,
+                    AVAILABILITYOUTOFSTOCK = "Vyprodáno",
+                    AVAILABILITYINSTOCK = "Skladem",
+                    INFORMATIONPARAMETERS = new INFORMATIONPARAMETERS()
+                };
+
+                if (!exportFeed)
+                {
+                    newShopItem.PURCHASEPRICE = entry.Wsp3NoVat.Replace(',', '.').Split(' ').FirstOrDefault();
+                }
+
+
+                if (int.TryParse(entry.StockQuantity, NumberStyles.Any, CultureInfo.InvariantCulture, out int quantity))
+                {
+                    newShopItem.STOCK = new STOCK() { AMOUNT = quantity };
+                }
+
+                // Handle images
+                if (!string.IsNullOrWhiteSpace(entry.ImageUrl))
+                {
+                    newShopItem.IMAGES = newShopItem.IMAGES ?? new IMAGES() { IMAGE = new List<string>() };
+                    newShopItem.IMAGES.IMAGE.Add(entry.ImageUrl);
+                }
+
+                foreach (var additionalImageUrl in entry.AdditionalImageUrl)
+                {
+                    if (!string.IsNullOrWhiteSpace(additionalImageUrl))
+                    {
+                        newShopItem.IMAGES = newShopItem.IMAGES ?? new IMAGES() { IMAGE = new List<string>() };
+                        newShopItem.IMAGES.IMAGE.Add(additionalImageUrl);
+                    }
+                }
+
+
+                // Handle pricing
+                if (exportFeed)
+                {
+                    newShopItem.PRICE = (double.Parse(entry.Wsp1NoVat.Replace(',', '.').Split(' ').FirstOrDefault().Trim(), NumberStyles.Any, CultureInfo.InvariantCulture) / (1 - (priceRaise - 1))).ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+                    newShopItem.PRICEVAT = (double.Parse(entry.Wsp1NoVat.Replace(',', '.').Split(' ').FirstOrDefault().Trim(), NumberStyles.Any, CultureInfo.InvariantCulture) / (1 - (priceRaise - 1)) * 1.21).ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    newShopItem.PRICE = entry.RetailPrice.Replace(',', '.').Split(' ').FirstOrDefault();
+                }
+
+                shoptetFeed.SHOPITEM.Add(newShopItem);
+            }
+
+            return shoptetFeed;
+        }
+
+
+        public static LevenhukNewXmlModel GetData(double priceRaise = 1)
+        {
+            string url = "https://cdn.t1.levenhuk.com/media/feed/znj_cz_leven_bress_meade_wsp1-2-3.xml";
             var feed = Tools.GetRawXmlFeed(url);
 
-            XmlSerializer serializer = new XmlSerializer(typeof(LevenhukXmlModel));
+            XmlSerializer serializer = new XmlSerializer(typeof(LevenhukNewXmlModel));
             using (XmlReader reader = new XmlNodeReader(feed))
             {
-                return (LevenhukXmlModel)serializer.Deserialize(reader);
+                return (LevenhukNewXmlModel)serializer.Deserialize(reader);
             }
         }
     }
