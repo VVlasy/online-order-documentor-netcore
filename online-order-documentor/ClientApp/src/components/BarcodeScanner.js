@@ -87,8 +87,6 @@ export default class BarcodeScanner extends React.Component {
                     name: 'Live',
                     type: 'LiveStream',
                     constraints: {
-                        width: 480,
-                        height: 480,
                         aspectRatio: { ideal: 1 },
                         facingMode: 'environment'
                     },
