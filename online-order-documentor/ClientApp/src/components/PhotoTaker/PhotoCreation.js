@@ -58,7 +58,9 @@ export default class PhotoCreation extends React.Component {
                         audio={false}
                         videoConstraints={{
                             facingMode: 'environment',
-                            aspectRatio: { ideal: 1 },
+                            width: { ideal: 1536 },
+                            height: { ideal: 1536 },
+                            aspectRatio: { ideal: 1 }
                         }} />
                 </div>
 
